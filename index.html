@@ -64,20 +64,26 @@
 
         <!-- TAB: DASHBOARD -->
         <div id="tab-dashboard" class="space-y-4 tab-content">
-            <!-- Плавающий доход виджет -->
-            <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/60 rounded-2xl p-4 shadow-xl">
-                <div class="flex justify-between items-center mb-3">
-                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Сценарий дохода</span>
-                    <span id="salary-scenario-badge" class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold">Средний: 150 000 ₽</span>
+            <!-- Плавающий доход и интерактивный ползунок до 1 млн -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/60 rounded-2xl p-4 shadow-xl space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Плавающий доход (Бизнес / Премия)</span>
+                    <span id="salary-scenario-badge" class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold">+60 000 ₽/мес</span>
                 </div>
-                <div class="grid grid-cols-3 gap-2 mb-3">
-                    <button onclick="setSalaryScenario('min')" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded-xl border border-slate-700 font-medium transition">Мин (110k)</button>
-                    <button onclick="setSalaryScenario('mid')" class="bg-blue-600/30 border border-blue-500 text-xs py-2 rounded-xl font-semibold text-blue-300 transition">Сред (150k)</button>
-                    <button onclick="setSalaryScenario('max')" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded-xl border border-slate-700 font-medium transition">Оптим (210k+)</button>
+                
+                <!-- Ползунок до 1 миллиона -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[11px] text-slate-400">
+                        <span>0 ₽</span>
+                        <span id="slider-current-val" class="text-emerald-400 font-bold text-xs">60 000 ₽</span>
+                        <span>1 000 000 ₽</span>
+                    </div>
+                    <input type="range" id="income-slider" min="0" max="1000000" step="5000" value="60000" oninput="onSliderChange(this.value)" class="w-full accent-emerald-500 bg-slate-900 cursor-pointer h-2 rounded-lg">
                 </div>
+
                 <div class="text-xs text-slate-400 flex justify-between items-center bg-slate-950/40 p-2.5 rounded-xl">
-                    <span>Оклад 10 и 25 числа: <strong class="text-slate-200">90 000 ₽</strong></span>
-                    <span>Премия: <strong id="variable-part-text" class="text-emerald-400">+60 000 ₽</strong></span>
+                    <span>Оклад (10 и 25 числа): <strong class="text-slate-200">90 000 ₽</strong></span>
+                    <span>Всего доход: <strong id="total-month-income" class="text-emerald-400">150 000 ₽</strong></span>
                 </div>
             </div>
 
@@ -89,7 +95,7 @@
                         <p class="text-xs font-medium text-slate-400 uppercase">Чистый баланс</p>
                         <h2 id="total-balance" class="text-3xl font-extrabold tracking-tight mt-1 text-white">248 500 ₽</h2>
                     </div>
-                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
+                    <span id="runway-badge" class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
                         <i class="fa-solid fa-arrow-trend-up"></i> Подушка: 3.2 мес
                     </span>
                 </div>
@@ -122,9 +128,7 @@
                     <h3 class="text-sm font-semibold">Финансовые цели & Сроки</h3>
                     <button onclick="switchTab('settings')" class="text-xs text-blue-400 hover:underline">Изменить</button>
                 </div>
-                <div id="goals-container" class="space-y-3">
-                    <!-- Заполняется динамически -->
-                </div>
+                <div id="goals-container" class="space-y-3"></div>
             </div>
         </div>
 
@@ -137,28 +141,28 @@
                     </div>
                     <div>
                         <h2 class="font-bold text-sm">Твой Финтренер на связи</h2>
-                        <p class="text-xs text-emerald-300">Анализирую плавающую ЗП и распределяю бюджет</p>
+                        <p class="text-xs text-emerald-300">Оцениваю твои бизнес-планы и доходы до 1 млн ₽</p>
                     </div>
                 </div>
-                <p class="text-xs text-slate-300 mt-2">«Брат, при окладе 90k и премии структура расходов стабильна. Ипотеку гасим досрочно с каждого поступления 10-го числа!»</p>
+                <p class="text-xs text-slate-300 mt-2">«Брат, если по новому бизнес-плану премия скакнет к полмиллиону — мы закроем ипотеку досрочно за год! Двигай ползунок, я пересчитаю стратегию».</p>
             </div>
 
             <!-- Чат с тренером -->
             <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col h-[380px]">
                 <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-1 text-sm">
                     <div class="bg-slate-800/80 p-3 rounded-2xl rounded-tl-sm text-slate-200 text-xs">
-                        Привет, брат! Я твой ИИ-тренер. Спроси меня о чем угодно или нажми быструю подсказку ниже:
+                        Привет, брат! Я готов разобрать твой новый бизнес-план. Спроси меня о чем угодно или нажми быструю подсказку:
                     </div>
                 </div>
                 <!-- Быстрые команды -->
                 <div class="py-2 flex gap-1.5 overflow-x-auto hide-scrollbar text-xs">
+                    <button onclick="sendCoachQuery('Оцени мой бизнес-план при доходе 300к')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Бизнес-план 300k</button>
                     <button onclick="sendCoachQuery('Сколько можно тратить в день?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Лимит на день</button>
                     <button onclick="sendCoachQuery('Куда пустить премию 10-го числа?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Премия 10-го</button>
-                    <button onclick="sendCoachQuery('Ипотека или накопительный счет?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Ипотека vs Вклад</button>
                 </div>
                 <!-- Инпут -->
                 <div class="flex gap-2 mt-2 pt-2 border-t border-slate-800">
-                    <input type="text" id="chat-input" placeholder="Спроси тренера или дай команду..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                    <input type="text" id="chat-input" placeholder="Расскажи про бизнес-план или спроси тренера..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
                     <button onclick="handleUserChat()" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-emerald-600 transition">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -172,9 +176,7 @@
                 <h2 class="font-bold text-base">График платежей и списаний</h2>
                 <button onclick="switchTab('settings')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs px-3 py-1.5 rounded-xl font-medium">+ Добавить</button>
             </div>
-            <div id="payments-list" class="space-y-2.5">
-                <!-- Заполняется динамически -->
-            </div>
+            <div id="payments-list" class="space-y-2.5"></div>
         </div>
 
         <!-- TAB: TRANSACTIONS (ЖУРНАЛ) -->
@@ -183,9 +185,7 @@
                 <h2 class="font-bold text-base">Журнал операций</h2>
                 <button onclick="openAddTxModal()" class="bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-xl font-semibold">+ Операция</button>
             </div>
-            <div id="transactions-list" class="space-y-2">
-                <!-- Заполняется динамически -->
-            </div>
+            <div id="transactions-list" class="space-y-2"></div>
         </div>
 
         <!-- TAB: SETTINGS (ПАРАМЕТРЫ И УПРАВЛЕНИЕ) -->
@@ -193,19 +193,29 @@
             <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl space-y-4">
                 <div class="border-b border-slate-800 pb-3">
                     <h2 class="font-bold text-base text-white">⚙️ Параметры и Управление</h2>
-                    <p class="text-xs text-slate-400">Настраивай свои доходы, обязательные платежи и цели в пару кликов</p>
+                    <p class="text-xs text-slate-400">Настраивай реальный баланс, доходы, платежи и цели прямо в телефоне</p>
+                </div>
+
+                <!-- Блок 0: Реальный баланс -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400">0. Реальный остаток на счетах</h3>
+                    <div>
+                        <label class="text-[10px] text-slate-400">Текущий общий баланс (₽)</label>
+                        <input type="number" id="setting-real-balance" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white mt-1">
+                    </div>
+                    <button onclick="saveRealBalance()" class="w-full bg-emerald-500 text-white text-xs py-2 rounded-xl font-semibold mt-1">Сохранить баланс</button>
                 </div>
 
                 <!-- Блок 1: Доходы и оклад -->
-                <div class="space-y-2">
+                <div class="space-y-2 pt-3 border-t border-slate-800">
                     <h3 class="text-xs font-semibold uppercase tracking-wider text-blue-400">1. Настройка Зарплаты</h3>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-[10px] text-slate-400">Оклад (10 и 25 числа)</label>
+                            <label class="text-[10px] text-slate-400">Оклад (10 и 25 число)</label>
                             <input type="number" id="setting-base-salary" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white mt-1">
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400">Средняя премия</label>
+                            <label class="text-[10px] text-slate-400">Переменная часть / Бизнес</label>
                             <input type="number" id="setting-var-salary" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white mt-1">
                         </div>
                     </div>
@@ -214,18 +224,14 @@
 
                 <!-- Блок 2: Обязательные платежи -->
                 <div class="space-y-3 pt-3 border-t border-slate-800">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400">2. Обязательные платежи</h3>
-                    </div>
-                    <div id="settings-payments-list" class="space-y-2 max-h-40 overflow-y-auto">
-                        <!-- Список с кнопкой удаления -->
-                    </div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400">2. Обязательные платежи</h3>
+                    <div id="settings-payments-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-2">
                         <p class="text-[11px] font-medium text-slate-300">Добавить платеж:</p>
                         <input type="text" id="new-pay-title" placeholder="Название (например, Интернет)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
                         <div class="grid grid-cols-2 gap-2">
                             <input type="number" id="new-pay-amount" placeholder="Сумма ₽" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
-                            <input type="text" id="new-pay-date" placeholder="Дата (например, 15 число)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                            <input type="text" id="new-pay-date" placeholder="Дата (напр. 15 число)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
                         </div>
                         <button onclick="addNewPayment()" class="w-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs py-1.5 rounded-xl font-semibold">Добавить платеж</button>
                     </div>
@@ -233,12 +239,8 @@
 
                 <!-- Блок 3: Цели -->
                 <div class="space-y-3 pt-3 border-t border-slate-800">
-                    <div class="flex justify-between items-center">
-                        <h3 class="text-xs font-semibold uppercase tracking-wider text-purple-400">3. Финансовые цели</h3>
-                    </div>
-                    <div id="settings-goals-list" class="space-y-2 max-h-40 overflow-y-auto">
-                        <!-- Список целей с удалением -->
-                    </div>
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-purple-400">3. Финансовые цели</h3>
+                    <div id="settings-goals-list" class="space-y-2 max-h-40 overflow-y-auto"></div>
                     <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-2">
                         <p class="text-[11px] font-medium text-slate-300">Добавить цель:</p>
                         <input type="text" id="new-goal-title" placeholder="Название (например, Новый ПК)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
@@ -315,12 +317,10 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // Состояние приложения (сохраняется в localStorage)
         let appData = JSON.parse(localStorage.getItem('finbrat_data')) || {
             baseSalary: 90000,
             variableSalary: 60000,
             balance: 248500,
-            scenario: 'mid',
             payments: [
                 { id: 1, title: "Ипотека Сбер", amount: 35000, date: "15 число", status: "pending" },
                 { id: 2, title: "Коммуналка", amount: 6500, date: "10 число", status: "paid" },
@@ -367,21 +367,35 @@
         }
 
         function renderAll() {
-            // Баланс и доходы
             document.getElementById('total-balance').innerText = appData.balance.toLocaleString() + ' ₽';
-            let inc = appData.baseSalary + appData.variableSalary;
-            document.getElementById('total-income').innerText = '+' + inc.toLocaleString() + ' ₽';
-            document.getElementById('variable-part-text').innerText = '+' + appData.variableSalary.toLocaleString() + ' ₽';
+            let totalInc = appData.baseSalary + Number(appData.variableSalary);
+            document.getElementById('total-income').innerText = '+' + totalInc.toLocaleString() + ' ₽';
+            
+            // Синхронизация слайдера
+            const slider = document.getElementById('income-slider');
+            if(slider) slider.value = appData.variableSalary;
+            document.getElementById('slider-current-val').innerText = Number(appData.variableSalary).toLocaleString() + ' ₽';
+            document.getElementById('salary-scenario-badge').innerText = '+' + Number(appData.variableSalary).toLocaleString() + ' ₽/мес';
+            document.getElementById('total-month-income').innerText = totalInc.toLocaleString() + ' ₽';
 
-            // Рендер целей
+            // Динамический расчет подушки безопасности
+            let monthlyExpenses = 58500; // средние расходы
+            let runway = (appData.balance / monthlyExpenses).toFixed(1);
+            document.getElementById('runway-badge').innerHTML = `<i class="fa-solid fa-arrow-trend-up"></i> Подушка: ${runway} мес`;
+
+            // Ускорение целей при большом доходе
             const goalsContainer = document.getElementById('goals-container');
             goalsContainer.innerHTML = appData.goals.map(g => {
                 let pct = Math.round((g.current / g.target) * 100);
+                // если доход выше 300к, уменьшаем сроки динамически!
+                let dynDeadline = g.deadline;
+                if(totalInc >= 300000 && g.id === 'mortgage') dynDeadline = '3 года 4 мес. (ускорено!)';
+                if(totalInc >= 300000 && g.id === 'pc') dynDeadline = '1.5 месяца!';
                 return `
                     <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
                         <div class="flex justify-between items-center text-xs mb-1.5">
                             <span class="font-semibold text-slate-200">${g.title}</span>
-                            <span class="text-slate-400">Срок: <strong class="text-emerald-400">${g.deadline}</strong></span>
+                            <span class="text-slate-400">Срок: <strong class="text-emerald-400">${dynDeadline}</strong></span>
                         </div>
                         <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-1">
                             <div class="bg-gradient-to-r from-emerald-500 to-blue-500 h-full rounded-full" style="width: ${pct}%"></div>
@@ -394,7 +408,6 @@
                 `;
             }).join('');
 
-            // Рендер платежей
             const payContainer = document.getElementById('payments-list');
             payContainer.innerHTML = appData.payments.map(p => `
                 <div class="bg-cardBg border border-slate-800 p-3 rounded-xl flex justify-between items-center">
@@ -409,7 +422,6 @@
                 </div>
             `).join('');
 
-            // Рендер транзакций
             const txContainer = document.getElementById('transactions-list');
             txContainer.innerHTML = appData.transactions.map(t => `
                 <div class="bg-cardBg border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs">
@@ -421,7 +433,7 @@
                 </div>
             `).join('');
 
-            // Рендер в настройках
+            document.getElementById('setting-real-balance').value = appData.balance;
             document.getElementById('setting-base-salary').value = appData.baseSalary;
             document.getElementById('setting-var-salary').value = appData.variableSalary;
 
@@ -442,6 +454,11 @@
             `).join('');
         }
 
+        function onSliderChange(val) {
+            appData.variableSalary = Number(val);
+            saveData();
+        }
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('tab-' + tabId).classList.remove('hidden');
@@ -453,19 +470,17 @@
             if(tabId === 'dashboard') initChart();
         }
 
-        function setSalaryScenario(type) {
-            if(type === 'min') { appData.variableSalary = 20000; appData.scenario = 'min'; }
-            if(type === 'mid') { appData.variableSalary = 60000; appData.scenario = 'mid'; }
-            if(type === 'max') { appData.variableSalary = 120000; appData.scenario = 'max'; }
-            document.getElementById('salary-scenario-badge').innerText = type === 'min' ? 'Консервативный: 110k' : type === 'mid' ? 'Средний: 150k' : 'Оптимистичный: 210k+';
+        function saveRealBalance() {
+            appData.balance = Number(document.getElementById('setting-real-balance').value);
             saveData();
+            alert('Реальный баланс успешно обновлен, брат!');
         }
 
         function saveSalarySettings() {
             appData.baseSalary = Number(document.getElementById('setting-base-salary').value);
             appData.variableSalary = Number(document.getElementById('setting-var-salary').value);
             saveData();
-            alert('Зарплата успешно обновлена, брат!');
+            alert('Зарплата и бизнес-доход успешно обновлены, брат!');
         }
 
         function addNewPayment() {
@@ -533,9 +548,10 @@
             const msgBox = document.getElementById('chat-messages');
             msgBox.innerHTML += `<div class="bg-blue-600/30 p-3 rounded-2xl rounded-tr-sm text-slate-100 text-xs ml-6">${query}</div>`;
             setTimeout(() => {
-                let reply = "Брат, всё под контролем! При текущем раскладе твоя подушка безопасности растет, продолжай в том же духе.";
-                if(query.includes('день')) reply = `Брат, до 25 числа осталось несколько дней. Твой безопасный лимит трат — примерно <strong>1 800 ₽ в день</strong>, чтобы не залезть в обязательные платежи.`;
-                if(query.includes('премию')) reply = `По премии 10-го числа: сразу отправляй 50% на досрочное погашение ипотеки, а остальное делим между целями и личными хотелками!`;
+                let totalInc = appData.baseSalary + Number(appData.variableSalary);
+                let reply = `Брат, при твоем текущем общем доходе в ${totalInc.toLocaleString()} ₽ бизнес-план работает мощно! Подушка безопасности растет, цели сокращают сроки.`;
+                if(query.includes('300к')) reply = `Брат, при доходе в 300 000 ₽ ты можешь направлять по 120 000 ₽ ежемесячно на досрочку ипотеки. Так ты сожмешь срок выплаты с 9 лет до комфортных 3 лет!`;
+                if(query.includes('день')) reply = `Брат, твой безопасный дневной лимит трат при текущих расходах — около <strong>2 500 ₽ в день</strong>.`;
                 msgBox.innerHTML += `<div class="bg-slate-800 p-3 rounded-2xl rounded-tl-sm text-slate-200 text-xs mr-6">${reply}</div>`;
                 msgBox.scrollTop = msgBox.scrollHeight;
             }, 500);
@@ -548,7 +564,6 @@
             input.value = '';
         }
 
-        // Инициализация при старте
         renderAll();
         initChart();
     </script>
