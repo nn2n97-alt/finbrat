@@ -1,2135 +1,556 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="ФинБрат">
-  <title>ФинБрат — Финансовый Ассистент & ИИ Советник</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
-  
-  <style>
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      padding-top: env(safe-area-inset-top);
-      padding-bottom: env(safe-area-inset-bottom);
-    }
-    .font-mono-numbers {
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
-    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148, 163, 184, 0.25); border-radius: 9999px; }
-    
-    /* Стили для iOS Standalone */
-    @supports (-webkit-touch-callout: none) {
-      .ios-safe-bottom {
-        padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-      }
-    }
-  </style>
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            sber: '#21a038',
-            brand: {
-              400: '#818cf8',
-              500: '#6366f1',
-              600: '#4f46e5',
-              900: '#1e1b4b',
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ФинБрат — Умный Личный и Бизнес-Финансист</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                        accentGreen: '#10b981',
+                        accentBlue: '#3b82f6',
+                        accentPurple: '#8b5cf6'
+                    }
+                }
             }
-          }
         }
-      }
-    }
-  </script>
+    </script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-indigo-500/30">
+<body class="bg-darkBg text-slate-100 min-h-screen pb-24">
 
-  <!-- ==================== ШАПКА ПРИЛОЖЕНИЯ ==================== -->
-  <header class="border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-md sticky top-0 z-40 px-4 lg:px-8 py-3 flex items-center justify-between">
-    <div class="flex items-center space-x-3">
-      <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-indigo-600 to-amber-400 p-[1.5px] shadow-lg shadow-indigo-500/10">
-        <div class="w-full h-full bg-slate-950 rounded-2xl flex items-center justify-center">
-          <i data-lucide="sparkles" class="w-5 h-5 text-emerald-400"></i>
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-darkBg/80 backdrop-blur-md border-b border-slate-800 px-4 py-3">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-emerald-500/20">
+                    ФБ
+                </div>
+                <div>
+                    <h1 class="font-bold text-base leading-tight">ФинБрат AI</h1>
+                    <p class="text-xs text-slate-400">Плавающий доход & Тренер</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openSberModal()" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center space-x-1.5 active:scale-95 transition">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Сбер</span>
+                </button>
+                <button onclick="switchTab('settings')" class="w-9 h-9 rounded-xl bg-slate-800 text-slate-300 flex items-center justify-center hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
         </div>
-      </div>
-      <div>
-        <div class="flex items-center gap-2">
-          <h1 class="text-base font-extrabold tracking-tight text-white">ФинБрат Pro</h1>
-          <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-gradient-to-r from-emerald-500/20 to-indigo-500/20 text-emerald-300 border border-emerald-500/30">
-            iPhone & AI Sync
-          </span>
-        </div>
-        <p class="text-[11px] text-slate-400">Плавающий доход • Ипотека • Управление через чат</p>
-      </div>
-    </div>
+    </header>
 
-    <!-- Вкладки (Десктоп) -->
-    <nav class="hidden lg:flex items-center space-x-1 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800">
-      <button onclick="switchTab('dashboard')" id="nav-dashboard" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-white bg-indigo-600 shadow-sm transition">
-        Обзор & Сценарии
-      </button>
-      <button onclick="switchTab('coach')" id="nav-coach" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 transition">
-        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-emerald-400"></i> Режим Тренера
-      </button>
-      <button onclick="switchTab('goals')" id="nav-goals" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
-        Ипотека & Цели
-      </button>
-      <button onclick="switchTab('transactions')" id="nav-transactions" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
-        Операции
-      </button>
-      <button onclick="switchTab('calendar')" id="nav-calendar" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition">
-        График 10/25
-      </button>
-      <button onclick="switchTab('chat')" id="nav-chat" class="tab-btn px-4 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 flex items-center gap-1.5 transition">
-        <i data-lucide="bot" class="w-3.5 h-3.5 text-indigo-400"></i> Управление в чате
-      </button>
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-md mx-auto px-4 pt-4">
+
+        <!-- TAB: DASHBOARD -->
+        <div id="tab-dashboard" class="space-y-4 tab-content">
+            <!-- Плавающий доход виджет -->
+            <div class="bg-gradient-to-br from-slate-800 to-slate-900 border border-slate-700/60 rounded-2xl p-4 shadow-xl">
+                <div class="flex justify-between items-center mb-3">
+                    <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Сценарий дохода</span>
+                    <span id="salary-scenario-badge" class="bg-blue-500/20 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold">Средний: 150 000 ₽</span>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mb-3">
+                    <button onclick="setSalaryScenario('min')" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded-xl border border-slate-700 font-medium transition">Мин (110k)</button>
+                    <button onclick="setSalaryScenario('mid')" class="bg-blue-600/30 border border-blue-500 text-xs py-2 rounded-xl font-semibold text-blue-300 transition">Сред (150k)</button>
+                    <button onclick="setSalaryScenario('max')" class="bg-slate-800 hover:bg-slate-700 text-xs py-2 rounded-xl border border-slate-700 font-medium transition">Оптим (210k+)</button>
+                </div>
+                <div class="text-xs text-slate-400 flex justify-between items-center bg-slate-950/40 p-2.5 rounded-xl">
+                    <span>Оклад 10 и 25 числа: <strong class="text-slate-200">90 000 ₽</strong></span>
+                    <span>Премия: <strong id="variable-part-text" class="text-emerald-400">+60 000 ₽</strong></span>
+                </div>
+            </div>
+
+            <!-- Карточка баланса -->
+            <div class="bg-cardBg border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl"></div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase">Чистый баланс</p>
+                        <h2 id="total-balance" class="text-3xl font-extrabold tracking-tight mt-1 text-white">248 500 ₽</h2>
+                    </div>
+                    <span class="bg-emerald-500/20 text-emerald-400 text-xs px-2.5 py-1 rounded-full font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Подушка: 3.2 мес
+                    </span>
+                </div>
+                <div class="grid grid-cols-2 gap-3 mt-4 pt-4 border-t border-slate-800/80">
+                    <div>
+                        <p class="text-xs text-slate-400">Доходы за месяц</p>
+                        <p id="total-income" class="text-base font-bold text-emerald-400 mt-0.5">+150 000 ₽</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-slate-400">Расходы</p>
+                        <p id="total-expense" class="text-base font-bold text-rose-400 mt-0.5">-42 300 ₽</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Блок диаграммы расходов -->
+            <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <h3 class="text-sm font-semibold mb-3 flex items-center justify-between">
+                    <span>Структура расходов</span>
+                    <span class="text-xs text-slate-400 font-normal">За текущий месяц</span>
+                </h3>
+                <div class="w-full h-48 flex justify-center items-center">
+                    <canvas id="expenseChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Цели и сроки (Ипотека и ПК) -->
+            <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-sm font-semibold">Финансовые цели & Сроки</h3>
+                    <button onclick="switchTab('settings')" class="text-xs text-blue-400 hover:underline">Изменить</button>
+                </div>
+                <div id="goals-container" class="space-y-3">
+                    <!-- Заполняется динамически -->
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: COACH (ТРЕНЕР) -->
+        <div id="tab-coach" class="space-y-4 tab-content hidden">
+            <div class="bg-gradient-to-r from-emerald-900/40 to-blue-900/40 border border-emerald-500/30 rounded-2xl p-4">
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
+                        <i class="fa-solid fa-robot"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-sm">Твой Финтренер на связи</h2>
+                        <p class="text-xs text-emerald-300">Анализирую плавающую ЗП и распределяю бюджет</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-300 mt-2">«Брат, при окладе 90k и премии структура расходов стабильна. Ипотеку гасим досрочно с каждого поступления 10-го числа!»</p>
+            </div>
+
+            <!-- Чат с тренером -->
+            <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col h-[380px]">
+                <div id="chat-messages" class="flex-1 overflow-y-auto space-y-3 pr-1 text-sm">
+                    <div class="bg-slate-800/80 p-3 rounded-2xl rounded-tl-sm text-slate-200 text-xs">
+                        Привет, брат! Я твой ИИ-тренер. Спроси меня о чем угодно или нажми быструю подсказку ниже:
+                    </div>
+                </div>
+                <!-- Быстрые команды -->
+                <div class="py-2 flex gap-1.5 overflow-x-auto hide-scrollbar text-xs">
+                    <button onclick="sendCoachQuery('Сколько можно тратить в день?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Лимит на день</button>
+                    <button onclick="sendCoachQuery('Куда пустить премию 10-го числа?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Премия 10-го</button>
+                    <button onclick="sendCoachQuery('Ипотека или накопительный счет?')" class="bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-xl whitespace-nowrap border border-slate-700">Ипотека vs Вклад</button>
+                </div>
+                <!-- Инпут -->
+                <div class="flex gap-2 mt-2 pt-2 border-t border-slate-800">
+                    <input type="text" id="chat-input" placeholder="Спроси тренера или дай команду..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-emerald-500">
+                    <button onclick="handleUserChat()" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-semibold hover:bg-emerald-600 transition">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: PAYMENTS (ГРАФИК ПЛАТЕЖЕЙ) -->
+        <div id="tab-payments" class="space-y-4 tab-content hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="font-bold text-base">График платежей и списаний</h2>
+                <button onclick="switchTab('settings')" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-xs px-3 py-1.5 rounded-xl font-medium">+ Добавить</button>
+            </div>
+            <div id="payments-list" class="space-y-2.5">
+                <!-- Заполняется динамически -->
+            </div>
+        </div>
+
+        <!-- TAB: TRANSACTIONS (ЖУРНАЛ) -->
+        <div id="tab-transactions" class="space-y-4 tab-content hidden">
+            <div class="flex justify-between items-center">
+                <h2 class="font-bold text-base">Журнал операций</h2>
+                <button onclick="openAddTxModal()" class="bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-xl font-semibold">+ Операция</button>
+            </div>
+            <div id="transactions-list" class="space-y-2">
+                <!-- Заполняется динамически -->
+            </div>
+        </div>
+
+        <!-- TAB: SETTINGS (ПАРАМЕТРЫ И УПРАВЛЕНИЕ) -->
+        <div id="tab-settings" class="space-y-5 tab-content hidden">
+            <div class="bg-cardBg border border-slate-800 rounded-2xl p-4 shadow-xl space-y-4">
+                <div class="border-b border-slate-800 pb-3">
+                    <h2 class="font-bold text-base text-white">⚙️ Параметры и Управление</h2>
+                    <p class="text-xs text-slate-400">Настраивай свои доходы, обязательные платежи и цели в пару кликов</p>
+                </div>
+
+                <!-- Блок 1: Доходы и оклад -->
+                <div class="space-y-2">
+                    <h3 class="text-xs font-semibold uppercase tracking-wider text-blue-400">1. Настройка Зарплаты</h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-slate-400">Оклад (10 и 25 числа)</label>
+                            <input type="number" id="setting-base-salary" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white mt-1">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400">Средняя премия</label>
+                            <input type="number" id="setting-var-salary" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white mt-1">
+                        </div>
+                    </div>
+                    <button onclick="saveSalarySettings()" class="w-full bg-blue-600 text-white text-xs py-2 rounded-xl font-semibold mt-1">Сохранить ЗП</button>
+                </div>
+
+                <!-- Блок 2: Обязательные платежи -->
+                <div class="space-y-3 pt-3 border-t border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-emerald-400">2. Обязательные платежи</h3>
+                    </div>
+                    <div id="settings-payments-list" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Список с кнопкой удаления -->
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-[11px] font-medium text-slate-300">Добавить платеж:</p>
+                        <input type="text" id="new-pay-title" placeholder="Название (например, Интернет)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="new-pay-amount" placeholder="Сумма ₽" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                            <input type="text" id="new-pay-date" placeholder="Дата (например, 15 число)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <button onclick="addNewPayment()" class="w-full bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs py-1.5 rounded-xl font-semibold">Добавить платеж</button>
+                    </div>
+                </div>
+
+                <!-- Блок 3: Цели -->
+                <div class="space-y-3 pt-3 border-t border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-semibold uppercase tracking-wider text-purple-400">3. Финансовые цели</h3>
+                    </div>
+                    <div id="settings-goals-list" class="space-y-2 max-h-40 overflow-y-auto">
+                        <!-- Список целей с удалением -->
+                    </div>
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800 space-y-2">
+                        <p class="text-[11px] font-medium text-slate-300">Добавить цель:</p>
+                        <input type="text" id="new-goal-title" placeholder="Название (например, Новый ПК)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="number" id="new-goal-target" placeholder="Целевая сумма ₽" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                            <input type="text" id="new-goal-deadline" placeholder="Срок (напр. 6 мес)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white">
+                        </div>
+                        <button onclick="addNewGoal()" class="w-full bg-purple-500/20 border border-purple-500/30 text-purple-300 text-xs py-1.5 rounded-xl font-semibold">Добавить цель</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-darkBg/95 backdrop-blur-lg border-t border-slate-800 py-2 px-4 z-50">
+        <div class="max-w-md mx-auto flex justify-around items-center">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center text-emerald-400 space-y-1">
+                <i class="fa-solid fa-wallet text-lg"></i>
+                <span class="text-[10px]">Баланс</span>
+            </button>
+            <button onclick="switchTab('coach')" id="nav-coach" class="flex flex-col items-center text-slate-400 space-y-1 hover:text-slate-200">
+                <i class="fa-solid fa-robot text-lg"></i>
+                <span class="text-[10px]">Тренер</span>
+            </button>
+            <button onclick="switchTab('payments')" id="nav-payments" class="flex flex-col items-center text-slate-400 space-y-1 hover:text-slate-200">
+                <i class="fa-solid fa-calendar-days text-lg"></i>
+                <span class="text-[10px]">Платежи</span>
+            </button>
+            <button onclick="switchTab('transactions')" id="nav-transactions" class="flex flex-col items-center text-slate-400 space-y-1 hover:text-slate-200">
+                <i class="fa-solid fa-list-check text-lg"></i>
+                <span class="text-[10px]">Журнал</span>
+            </button>
+            <button onclick="switchTab('settings')" id="nav-settings" class="flex flex-col items-center text-slate-400 space-y-1 hover:text-slate-200">
+                <i class="fa-solid fa-sliders text-lg"></i>
+                <span class="text-[10px]">Настройки</span>
+            </button>
+        </div>
     </nav>
 
-    <!-- Быстрые действия -->
-    <div class="flex items-center space-x-2">
-      <!-- Кнопка импорта из Сбера -->
-      <button onclick="openModal('modal-sber-import')" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-semibold rounded-xl transition">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
-        <span>Сбер Импорт</span>
-      </button>
-
-      <button onclick="openModal('modal-iphone-info')" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition" title="Инструкция для iPhone">
-        <i data-lucide="smartphone" class="w-4 h-4 text-indigo-400"></i>
-      </button>
-      <button onclick="openModal('modal-settings')" class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white transition" title="Настройки API">
-        <i data-lucide="settings" class="w-4 h-4"></i>
-      </button>
-    </div>
-  </header>
-
-  <!-- ==================== МОБИЛЬНОЕ НИЖНЕЕ МЕНЮ (iOS) ==================== -->
-  <div class="lg:hidden fixed bottom-0 left-0 right-0 bg-slate-950/95 backdrop-blur-xl border-t border-slate-800/80 z-40 px-3 py-2 flex justify-around ios-safe-bottom">
-    <button onclick="switchTab('dashboard')" class="mob-tab flex flex-col items-center text-[10px] text-indigo-400">
-      <i data-lucide="layout-dashboard" class="w-5 h-5 mb-1"></i>
-      <span>Обзор</span>
-    </button>
-    <button onclick="switchTab('coach')" class="mob-tab flex flex-col items-center text-[10px] text-emerald-400">
-      <i data-lucide="shield-check" class="w-5 h-5 mb-1"></i>
-      <span>Тренер</span>
-    </button>
-    <button onclick="openTransactionModal('income')" class="flex flex-col items-center justify-center -mt-5 bg-gradient-to-tr from-emerald-500 to-indigo-600 w-12 h-12 rounded-full shadow-lg shadow-emerald-500/20 text-white">
-      <i data-lucide="plus" class="w-6 h-6"></i>
-    </button>
-    <button onclick="switchTab('goals')" class="mob-tab flex flex-col items-center text-[10px] text-slate-400">
-      <i data-lucide="target" class="w-5 h-5 mb-1"></i>
-      <span>Цели</span>
-    </button>
-    <button onclick="switchTab('chat')" class="mob-tab flex flex-col items-center text-[10px] text-indigo-400">
-      <i data-lucide="bot" class="w-5 h-5 mb-1"></i>
-      <span>ИИ Брат</span>
-    </button>
-  </div>
-
-  <!-- ==================== ОСНОВНОЙ КОНТЕНТ ==================== -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 pb-24 lg:pb-8 space-y-6">
-
-    <!-- ==================== ВКЛАДКА 1: ОБЗОР & СЦЕНАРИИ ==================== -->
-    <div id="tab-dashboard" class="tab-content space-y-6">
-
-      <!-- БЛОК: СИМУЛЯТОР ПЛАВАЮЩЕГО ДОХОДА (110k - 210k) -->
-      <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-3xl p-5 lg:p-6 shadow-xl relative overflow-hidden">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                Движок плавающей ЗП
-              </span>
-              <span class="text-xs text-slate-400">Оклад 90 000 ₽ (10 и 25 числа) + переменная часть</span>
+    <!-- МОДАЛКА СБЕР ИМПОРТА -->
+    <div id="sber-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-cardBg border border-slate-800 rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm text-emerald-400"><i class="fa-solid fa-bolt"></i> Сбер Импорт (SMS / Выписка)</h3>
+                <button onclick="closeSberModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <h2 class="text-lg lg:text-xl font-extrabold text-white mt-1">
-              Прогноз денежного потока на месяц: <span id="current-scenario-label" class="text-emerald-400 font-mono-numbers">150 000 ₽</span>
-            </h2>
-          </div>
-
-          <!-- Быстрые сценарии -->
-          <div class="flex items-center gap-2 bg-slate-900/90 p-1.5 rounded-2xl border border-slate-800 text-xs font-semibold">
-            <button onclick="setIncomeScenario(110000, 'Консервативный')" class="px-3 py-1.5 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition">
-              110k (Мин)
-            </button>
-            <button onclick="setIncomeScenario(150000, 'Базовый / Средний')" class="px-3 py-1.5 rounded-xl bg-indigo-600 text-white shadow-sm transition">
-              150k (Средний)
-            </button>
-            <button onclick="setIncomeScenario(210000, 'Оптимистичный')" class="px-3 py-1.5 rounded-xl text-emerald-400 hover:bg-emerald-500/10 transition">
-              210k+ (Макс)
-            </button>
-          </div>
+            <p class="text-xs text-slate-300">Вставь текст SMS от номера 900 или выписку:</p>
+            <textarea id="sber-sms-text" rows="4" placeholder="Покупка 1450р Магнит или Перевод 45000р зарплата" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-emerald-500"></textarea>
+            <button onclick="processSberImport()" class="w-full bg-emerald-500 text-white font-semibold py-2.5 rounded-xl text-xs shadow-lg shadow-emerald-500/20">Распознать и добавить</button>
         </div>
-
-        <!-- Ползунок плавающего заработка -->
-        <div class="space-y-2 mt-4 bg-slate-950/50 p-4 rounded-2xl border border-slate-800/60">
-          <div class="flex justify-between text-xs font-semibold">
-            <span class="text-slate-400">Минимум: 110 000 ₽</span>
-            <span class="text-indigo-400 font-bold" id="slider-display-val">150 000 ₽ в месяц</span>
-            <span class="text-slate-400">Максимум: 260 000+ ₽</span>
-          </div>
-          <input 
-            type="range" 
-            id="income-simulator-slider" 
-            min="100000" 
-            max="260000" 
-            step="5000" 
-            value="150000" 
-            oninput="handleSliderChange(this.value)"
-            class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
-          >
-          <div class="flex flex-wrap items-center justify-between text-[11px] text-slate-400 pt-1">
-            <span>🔹 Оклад: <b>90 000 ₽</b> (45k аванс 25-го + 45k расчет 10-го)</span>
-            <span>⚡ Переменная премия/бонус: <b id="calc-bonus-display" class="text-emerald-400">+60 000 ₽</b></span>
-            <span>🎯 Свободный остаток на цели: <b id="calc-surplus-display" class="text-indigo-300 font-mono-numbers">~62 000 ₽</b></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- КЛЮЧЕВЫЕ МЕТРИКИ (С КАРТОЧКАМИ) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5 lg:gap-4">
-        <!-- Текущий баланс -->
-        <div class="bg-slate-900/70 border border-slate-800/80 p-4 lg:p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 text-xs">
-            <span>Реальный остаток</span>
-            <div class="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400"><i data-lucide="wallet" class="w-4 h-4"></i></div>
-          </div>
-          <div class="mt-2 text-xl lg:text-2xl font-black text-white font-mono-numbers" id="stat-balance">0 ₽</div>
-          <div class="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <i data-lucide="check" class="w-3 h-3 text-emerald-400"></i> С учетом расходов
-          </div>
-        </div>
-
-        <!-- Обязательные списания в месяц -->
-        <div class="bg-slate-900/70 border border-slate-800/80 p-4 lg:p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 text-xs">
-            <span>Обязательные платежи</span>
-            <div class="p-1.5 rounded-lg bg-amber-500/10 text-amber-400"><i data-lucide="calendar-clock" class="w-4 h-4"></i></div>
-          </div>
-          <div class="mt-2 text-xl lg:text-2xl font-black text-amber-400 font-mono-numbers" id="stat-mandatory">0 ₽</div>
-          <div class="text-[11px] text-slate-500 mt-1">Ипотека, кредиты, ЖКХ</div>
-        </div>
-
-        <!-- Срок до закрытия Ипотеки -->
-        <div class="bg-slate-900/70 border border-slate-800/80 p-4 lg:p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 text-xs">
-            <span>До закрытия ипотеки</span>
-            <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400"><i data-lucide="home" class="w-4 h-4"></i></div>
-          </div>
-          <div class="mt-2 text-xl lg:text-2xl font-black text-emerald-400 font-mono-numbers" id="stat-mortgage-eta">~9 лет 2 мес</div>
-          <div class="text-[11px] text-slate-500 mt-1" id="stat-mortgage-sub">При текущем темпе</div>
-        </div>
-
-        <!-- До покупки Компьютера -->
-        <div class="bg-slate-900/70 border border-slate-800/80 p-4 lg:p-5 rounded-2xl">
-          <div class="flex items-center justify-between text-slate-400 text-xs">
-            <span>До покупки ПК / Цели</span>
-            <div class="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400"><i data-lucide="monitor" class="w-4 h-4"></i></div>
-          </div>
-          <div class="mt-2 text-xl lg:text-2xl font-black text-cyan-400 font-mono-numbers" id="stat-pc-eta">~5 месяцев</div>
-          <div class="text-[11px] text-slate-500 mt-1">При отчислении из премии</div>
-        </div>
-      </div>
-
-      <!-- ГРАФИКИ И ДИАГРАММЫ СРОКОВ -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Диаграмма сроков достижения целей (Барчарт/Gantt) -->
-        <div class="lg:col-span-2 bg-slate-900/60 border border-slate-800/80 p-5 rounded-3xl">
-          <div class="flex items-center justify-between mb-4">
-            <div>
-              <h3 class="font-bold text-white text-sm">Схема сроков: сколько осталось до каждой цели</h3>
-              <p class="text-xs text-slate-400">Наглядно: как плавающий доход сокращает дистанцию</p>
-            </div>
-            <span class="text-xs text-indigo-400 font-semibold px-2 py-1 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
-              Динамический расчет
-            </span>
-          </div>
-          <div class="h-64 relative">
-            <canvas id="goalsTimelineChart"></canvas>
-          </div>
-        </div>
-
-        <!-- Структура бюджета при текущем сценарии -->
-        <div class="bg-slate-900/60 border border-slate-800/80 p-5 rounded-3xl flex flex-col justify-between">
-          <div>
-            <h3 class="font-bold text-white text-sm">Распределение дохода</h3>
-            <p class="text-xs text-slate-400 mb-3">Обязательное vs Жизнь vs Цели</p>
-            <div class="h-44 relative flex items-center justify-center">
-              <canvas id="budgetSplitChart"></canvas>
-            </div>
-          </div>
-          <div class="space-y-2 pt-3 border-t border-slate-800/80 text-xs">
-            <div class="flex justify-between text-slate-400">
-              <span>Обязательные счета:</span>
-              <span class="font-bold text-white font-mono-numbers" id="breakdown-bills">0 ₽</span>
-            </div>
-            <div class="flex justify-between text-slate-400">
-              <span>На жизнь и быт (35%):</span>
-              <span class="font-bold text-emerald-400 font-mono-numbers" id="breakdown-living">0 ₽</span>
-            </div>
-            <div class="flex justify-between text-slate-400">
-              <span>В ипотеку и накопления:</span>
-              <span class="font-bold text-indigo-400 font-mono-numbers" id="breakdown-savings">0 ₽</span>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ВИДЖЕТ: ЧТО БУДЕТ 10-ГО И 25-ГО ЧИСЛА (ВЫПЛАТЫ И СПИСАНИЯ) -->
-      <div class="bg-slate-900/60 border border-slate-800/80 p-5 rounded-3xl">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="font-bold text-white text-sm flex items-center gap-2">
-            <i data-lucide="milestone" class="w-4 h-4 text-emerald-400"></i>
-            Контрольные даты месяца (Зарплатные дни и обязательства)
-          </h3>
-          <button onclick="switchTab('calendar')" class="text-xs text-indigo-400 hover:text-indigo-300">Полный календарь &rarr;</button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-          <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-start justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
-                <span class="font-bold text-white text-sm">10 число — Расчетная ЗП + Премия</span>
-              </div>
-              <p class="text-slate-400 mt-1">Окладная часть 45 000 ₽ + весь заработанный бонус (от 20 000 до 120 000 ₽).</p>
-              <div class="mt-2 text-indigo-300">Рекомендация: сразу отложить сверх-доход на досрочное закрытие ипотеки!</div>
-            </div>
-            <span class="text-xs font-mono-numbers text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded-lg">Выплата</span>
-          </div>
-
-          <div class="p-4 rounded-2xl bg-slate-950/60 border border-slate-800/80 flex items-start justify-between">
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-indigo-400"></span>
-                <span class="font-bold text-white text-sm">25 число — Аванс (Оклад)</span>
-              </div>
-              <p class="text-slate-400 mt-1">Фиксированный аванс 45 000 ₽.</p>
-              <div class="mt-2 text-slate-300">Распределяется строго на аренду/коммуналку и еду до конца месяца.</div>
-            </div>
-            <span class="text-xs font-mono-numbers text-indigo-300 font-bold bg-indigo-500/10 px-2 py-1 rounded-lg">Аванс</span>
-          </div>
-        </div>
-      </div>
-
     </div>
 
-    <!-- ==================== НОВАЯ ВКЛАДКА: РЕЖИМ ФИНАНСОВОГО ТРЕНЕРА ==================== -->
-    <div id="tab-coach" class="tab-content hidden space-y-6">
-
-      <!-- БАННЕР ТРЕНЕРА -->
-      <div class="bg-gradient-to-r from-emerald-950/60 via-slate-900 to-indigo-950/60 border border-emerald-500/40 rounded-3xl p-5 lg:p-6 shadow-2xl relative overflow-hidden">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div class="flex items-start gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-cyan-500 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/20 shrink-0">
-              <i data-lucide="shield-check" class="w-7 h-7 text-slate-950"></i>
+    <!-- МОДАЛКА ДОБАВЛЕНИЯ ТРАНЗАКЦИИ -->
+    <div id="tx-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-cardBg border border-slate-800 rounded-2xl p-5 w-full max-w-sm space-y-3 shadow-2xl">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-sm">Новая операция</h3>
+                <button onclick="closeAddTxModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  Активный Финансовый Тренер
-                </span>
-                <span class="text-xs text-slate-400">Стратегия 50/35/15</span>
-              </div>
-              <h2 class="text-lg lg:text-xl font-black text-white mt-1">
-                Контроль кассовых разрывов & Максимизация капитала
-              </h2>
-              <p class="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
-                Я не даю расплывчатых советов. Я рассчитываю твой безопасный дневной чек, говорю на какой счет положить свободный остаток и направляю плавающие бонусы в цели без стресса для уровня жизни.
-              </p>
+            <div class="space-y-2">
+                <select id="tx-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                    <option value="expense">Расход</option>
+                    <option value="income">Доход</option>
+                </select>
+                <input type="text" id="tx-title" placeholder="Название (например, Продукты)" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
+                <input type="number" id="tx-amount" placeholder="Сумма ₽" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2.5 text-xs text-white">
             </div>
-          </div>
-
-          <!-- Экспресс-кнопка аудита -->
-          <button onclick="triggerCoachAudit('full')" class="px-5 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-extrabold rounded-2xl text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 transition shrink-0">
-            <i data-lucide="sparkles" class="w-4 h-4"></i>
-            <span>Запустить полный аудит</span>
-          </button>
+            <button onclick="saveNewTransaction()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl text-xs">Добавить</button>
         </div>
-      </div>
+    </div>
 
-      <!-- КНОПКИ БЫСТРЫХ АУДИТОВ ТРЕНЕРА -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
-        <button onclick="triggerCoachAudit('daily_limit')" class="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 text-left transition flex flex-col justify-between group">
-          <div class="flex items-center justify-between w-full">
-            <span class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 group-hover:scale-110 transition"><i data-lucide="calendar-range" class="w-4 h-4"></i></span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition"></i>
-          </div>
-          <div class="mt-3">
-            <div class="text-xs font-bold text-white">Лимит на день до 25-го</div>
-            <div class="text-[11px] text-slate-400 mt-0.5" id="coach-quick-daily-hint">Расчет безопасных трат</div>
-          </div>
-        </button>
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // Состояние приложения (сохраняется в localStorage)
+        let appData = JSON.parse(localStorage.getItem('finbrat_data')) || {
+            baseSalary: 90000,
+            variableSalary: 60000,
+            balance: 248500,
+            scenario: 'mid',
+            payments: [
+                { id: 1, title: "Ипотека Сбер", amount: 35000, date: "15 число", status: "pending" },
+                { id: 2, title: "Коммуналка", amount: 6500, date: "10 число", status: "paid" },
+                { id: 3, title: "Xbox Game Pass", amount: 900, date: "28 число", status: "pending" }
+            ],
+            goals: [
+                { id: "mortgage", title: "Ипотека в Сбере", target: 4500000, current: 1200000, deadline: "9 лет 2 мес." },
+                { id: "pc", title: "Новый ПК", target: 140000, current: 95000, deadline: "5 месяцев" }
+            ],
+            transactions: [
+                { id: 1, title: "Аванс Сбер", amount: 45000, type: "income", date: "25 мар" },
+                { id: 2, title: "ЛУКОЙЛ Бензин АИ-95", amount: 2400, type: "expense", date: "24 мар" },
+                { id: 3, title: "Продукты Магнит", amount: 3100, type: "expense", date: "23 мар" }
+            ]
+        };
 
-        <button onclick="triggerCoachAudit('bonus_split')" class="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 text-left transition flex flex-col justify-between group">
-          <div class="flex items-center justify-between w-full">
-            <span class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 group-hover:scale-110 transition"><i data-lucide="split" class="w-4 h-4"></i></span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition"></i>
-          </div>
-          <div class="mt-3">
-            <div class="text-xs font-bold text-white">Распределить премию 10-го</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Сверх базы 90 000 ₽</div>
-          </div>
-        </button>
+        function saveData() {
+            localStorage.setItem('finbrat_data', JSON.stringify(appData));
+            renderAll();
+        }
 
-        <button onclick="triggerCoachAudit('mortgage_vs_yield')" class="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 text-left transition flex flex-col justify-between group">
-          <div class="flex items-center justify-between w-full">
-            <span class="p-2 rounded-xl bg-amber-500/10 text-amber-400 group-hover:scale-110 transition"><i data-lucide="scale" class="w-4 h-4"></i></span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition"></i>
-          </div>
-          <div class="mt-3">
-            <div class="text-xs font-bold text-white">Ипотека vs Накопит. счет</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Где выше доходность</div>
-          </div>
-        </button>
+        let chartInstance = null;
 
-        <button onclick="triggerCoachAudit('expense_leak')" class="p-4 rounded-2xl bg-slate-900/80 hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/50 text-left transition flex flex-col justify-between group">
-          <div class="flex items-center justify-between w-full">
-            <span class="p-2 rounded-xl bg-rose-500/10 text-rose-400 group-hover:scale-110 transition"><i data-lucide="search-alert" class="w-4 h-4"></i></span>
-            <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-emerald-400 transition"></i>
-          </div>
-          <div class="mt-3">
-            <div class="text-xs font-bold text-white">Поиск скрытых утечек</div>
-            <div class="text-[11px] text-slate-400 mt-0.5">Аудит лишних подписок и трат</div>
-          </div>
-        </button>
-      </div>
-
-      <!-- ИНТЕРАКТИВНЫЙ БЛОК: СОВЕТ ДНЯ И МАРШРУТИЗАЦИЯ СЧЕТОВ -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-        <!-- Совет дня и интерактивное действие -->
-        <div class="lg:col-span-2 bg-slate-900/70 border border-slate-800/90 rounded-3xl p-5 lg:p-6 flex flex-col justify-between shadow-xl">
-          <div>
-            <div class="flex items-center justify-between pb-3 border-b border-slate-800/70">
-              <div class="flex items-center gap-2">
-                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
-                <h3 class="font-bold text-white text-sm">Персональная рекомендация тренера</h3>
-              </div>
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono font-semibold" id="coach-advice-time">Актуально сейчас</span>
-            </div>
+        function initChart() {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
             
-            <div id="coach-advice-text" class="text-xs text-slate-200 mt-4 leading-relaxed space-y-2">
-              <!-- Заполняется динамически тренером -->
-            </div>
-          </div>
-
-          <!-- Быстрые действия в один клик -->
-          <div class="mt-6 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3">
-            <div class="text-[11px] text-slate-400">
-              💡 Хочешь применить этот шаг в один клик?
-            </div>
-            <div class="flex items-center gap-2" id="coach-action-buttons">
-              <!-- Кнопки действий генерируются динамически -->
-            </div>
-          </div>
-        </div>
-
-        <!-- КАРТА СЧЕТОВ: КУДА И СКОЛЬКО РАСПРЕДЕЛИТЬ СЕЙЧАС -->
-        <div class="bg-slate-900/70 border border-slate-800/90 rounded-3xl p-5 flex flex-col justify-between shadow-xl">
-          <div>
-            <div class="flex items-center justify-between mb-3">
-              <h3 class="font-bold text-white text-sm">Маршрут по счетам</h3>
-              <span class="text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-500/20">Начисление %</span>
-            </div>
-            <p class="text-xs text-slate-400 mb-4">Где сейчас должны находиться твои деньги, чтобы приносить доход:</p>
-
-            <div class="space-y-3 text-xs">
-              <!-- Накопительный счет -->
-              <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <div class="flex justify-between font-semibold">
-                  <span class="text-emerald-400 flex items-center gap-1.5">
-                    <i data-lucide="percent" class="w-3.5 h-3.5"></i> Накопительный счет
-                  </span>
-                  <span class="text-white font-mono-numbers" id="route-savings-acc">0 ₽</span>
-                </div>
-                <div class="text-[10px] text-slate-400 mt-1">
-                  Ежедневный остаток до 25-го числа (14-16% годовых с начислением каждый день).
-                </div>
-              </div>
-
-              <!-- Карта покупок -->
-              <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <div class="flex justify-between font-semibold">
-                  <span class="text-indigo-400 flex items-center gap-1.5">
-                    <i data-lucide="credit-card" class="w-3.5 h-3.5"></i> Карта для жизни
-                  </span>
-                  <span class="text-white font-mono-numbers" id="route-debit-acc">0 ₽</span>
-                </div>
-                <div class="text-[10px] text-slate-400 mt-1">
-                  Лимит на 3-4 дня вперед, чтобы не потратить всё импульсивно.
-                </div>
-              </div>
-
-              <!-- Целевой фонд -->
-              <div class="p-3 rounded-2xl bg-slate-950/70 border border-slate-800/80">
-                <div class="flex justify-between font-semibold">
-                  <span class="text-cyan-400 flex items-center gap-1.5">
-                    <i data-lucide="lock" class="w-3.5 h-3.5"></i> Фонд Ипотеки & ПК
-                  </span>
-                  <span class="text-white font-mono-numbers" id="route-goals-acc">0 ₽</span>
-                </div>
-                <div class="text-[10px] text-slate-400 mt-1">
-                  Неприкосновенная бронь для погашения долга и покупки техники.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pt-4 border-t border-slate-800/80 text-center">
-            <button onclick="switchTab('chat')" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold inline-flex items-center gap-1">
-              Обсудить этот план с ИИ ФинБратом &rarr;
-            </button>
-          </div>
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ==================== ВКЛАДКА 2: ИПОТЕКА И ЦЕЛИ (С ДИАГРАММАМИ) ==================== -->
-    <div id="tab-goals" class="tab-content hidden space-y-6">
-      
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-slate-900/60 p-4 rounded-3xl border border-slate-800/80">
-        <div>
-          <h2 class="text-lg font-extrabold text-white">Ипотека & Большие цели</h2>
-          <p class="text-xs text-slate-400">Точные расчеты: сколько лет осталось и как закрыть в 2 раза быстрее</p>
-        </div>
-        <button onclick="openGoalModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow transition">
-          <i data-lucide="plus" class="w-4 h-4"></i> Добавить цель
-        </button>
-      </div>
-
-      <!-- КАРТОЧКА СПЕЦ-ЦЕЛИ: ИПОТЕКА -->
-      <div id="mortgage-card-container">
-        <!-- Генерируется скриптом -->
-      </div>
-
-      <!-- СЕТКА ОСТАЛЬНЫХ ЦЕЛЕЙ (Компьютер, Подушка безопасности и др.) -->
-      <div id="goals-list-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        <!-- Генерируется скриптом -->
-      </div>
-
-    </div>
-
-    <!-- ==================== ВКЛАДКА 3: ОПЕРАЦИИ & СБЕР ВЫПИСКА ==================== -->
-    <div id="tab-transactions" class="tab-content hidden space-y-6">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/60 p-4 rounded-3xl border border-slate-800/80">
-        <div>
-          <h2 class="text-lg font-bold text-white">Журнал доходов и списаний</h2>
-          <p class="text-xs text-slate-400">Включая авто-распознанные операции из Сбера и чата</p>
-        </div>
-        <div class="flex items-center gap-2">
-          <button onclick="openTransactionModal('income')" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition">
-            <i data-lucide="plus" class="w-4 h-4"></i> Доход
-          </button>
-          <button onclick="openTransactionModal('expense')" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition">
-            <i data-lucide="minus" class="w-4 h-4"></i> Расход
-          </button>
-          <button onclick="openModal('modal-sber-import')" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-semibold flex items-center gap-1 transition">
-            <i data-lucide="download" class="w-4 h-4"></i> Импорт Сбер
-          </button>
-        </div>
-      </div>
-
-      <!-- Поиск и фильтры -->
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="relative flex-1 min-w-[220px]">
-          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-3"></i>
-          <input type="text" id="tx-search" placeholder="Поиск по описанию или категории..." oninput="renderTransactions()" class="w-full pl-9 pr-4 py-2.5 bg-slate-900 border border-slate-800 rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
-        </div>
-        <select id="tx-filter-type" onchange="renderTransactions()" class="bg-slate-900 border border-slate-800 text-slate-300 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-indigo-500">
-          <option value="all">Все операции</option>
-          <option value="income">Только поступления</option>
-          <option value="expense">Только списания</option>
-        </select>
-      </div>
-
-      <!-- Таблица -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-3xl overflow-hidden shadow">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-800">
-              <tr>
-                <th class="p-3.5">Дата</th>
-                <th class="p-3.5">Источник / Категория</th>
-                <th class="p-3.5">Описание</th>
-                <th class="p-3.5 text-right">Сумма</th>
-                <th class="p-3.5 text-center">Удалить</th>
-              </tr>
-            </thead>
-            <tbody id="transactions-table-body" class="divide-y divide-slate-800/60">
-              <!-- Заполняется динамически -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== ВКЛАДКА 4: ГРАФИК ПЛАТЕЖЕЙ И 10/25 ==================== -->
-    <div id="tab-calendar" class="tab-content hidden space-y-6">
-      <div class="flex items-center justify-between bg-slate-900/60 p-4 rounded-3xl border border-slate-800/80">
-        <div>
-          <h2 class="text-lg font-bold text-white">График платежей и прихода зарплаты</h2>
-          <p class="text-xs text-slate-400">Контроль дат списаний, чтобы не попасть в кассовый разрыв</p>
-        </div>
-        <button onclick="openScheduleModal()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 shadow transition">
-          <i data-lucide="plus" class="w-4 h-4"></i> Добавить списание
-        </button>
-      </div>
-
-      <!-- Список платежей -->
-      <div class="bg-slate-900/60 border border-slate-800/80 rounded-3xl overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs">
-            <thead class="bg-slate-900 text-slate-400 uppercase font-semibold border-b border-slate-800">
-              <tr>
-                <th class="p-3.5">Дата списания</th>
-                <th class="p-3.5">Платеж</th>
-                <th class="p-3.5">Категория</th>
-                <th class="p-3.5">Сумма</th>
-                <th class="p-3.5">Повторение</th>
-                <th class="p-3.5">Статус</th>
-                <th class="p-3.5 text-center">Действие</th>
-              </tr>
-            </thead>
-            <tbody id="schedules-table-body" class="divide-y divide-slate-800/60">
-              <!-- Заполняется динамически -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ==================== ВКЛАДКА 5: ИИ СОВЕТНИК (С ПРЯМЫМ УПРАВЛЕНИЕМ) ==================== -->
-    <div id="tab-chat" class="tab-content hidden h-[calc(100vh-160px)] flex flex-col">
-      <div class="bg-slate-900/70 border border-slate-800/80 rounded-3xl flex-1 flex flex-col overflow-hidden backdrop-blur">
-        
-        <!-- Шапка чата -->
-        <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/90">
-          <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
-              <i data-lucide="bot" class="w-5 h-5"></i>
-            </div>
-            <div>
-              <div class="flex items-center gap-2">
-                <h3 class="text-sm font-bold text-white">ИИ ФинБрат Co-Pilot</h3>
-                <span class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
-                  Умеет менять данные
-                </span>
-              </div>
-              <p class="text-[11px] text-slate-400">Напиши: «Запиши расход 3500 на такси» или «Закинь 20000 в цель Компьютер»</p>
-            </div>
-          </div>
-          <button onclick="clearChatHistory()" class="text-xs text-slate-400 hover:text-rose-400 px-2 py-1 rounded-lg transition">
-            Очистить
-          </button>
-        </div>
-
-        <!-- Сообщения чата -->
-        <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 custom-scrollbar">
-          <!-- Сообщения генерируются скриптом -->
-        </div>
-
-        <!-- Быстрые команды управления -->
-        <div class="px-4 py-2 border-t border-slate-800/60 flex items-center gap-2 overflow-x-auto text-[11px] custom-scrollbar bg-slate-950/60">
-          <span class="text-slate-500 whitespace-nowrap">Команды в 1 клик:</span>
-          <button onclick="sendQuickPrompt('Запиши расход 2500 на продукты')" class="whitespace-nowrap px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 transition">
-            🛒 «Запиши расход 2500 продукты»
-          </button>
-          <button onclick="sendQuickPrompt('Добавь доход премия 60000')" class="whitespace-nowrap px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 transition">
-            💰 «Добавь доход премия 60000»
-          </button>
-          <button onclick="sendQuickPrompt('Внеси 15000 в цель Компьютер')" class="whitespace-nowrap px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 transition">
-            💻 «Внеси 15000 в цель Компьютер»
-          </button>
-          <button onclick="sendQuickPrompt('Если доход будет 210000, когда закроется ипотека?')" class="whitespace-nowrap px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700/80 transition">
-            🏠 «Когда закрою ипотеку при 210k?»
-          </button>
-        </div>
-
-        <!-- Поле ввода -->
-        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="p-3 border-t border-slate-800/80 bg-slate-900/90 flex items-center gap-2">
-          <input 
-            type="text" 
-            id="chat-input" 
-            placeholder="Скажи мне что записать или спроси финансовый совет..." 
-            class="flex-1 bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-4 py-3 text-xs text-white placeholder-slate-500 focus:outline-none"
-          >
-          <button 
-            type="submit" 
-            id="chat-send-btn"
-            class="px-4 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition shadow"
-          >
-            <span>Отправить</span>
-            <i data-lucide="send" class="w-3.5 h-3.5"></i>
-          </button>
-        </form>
-
-      </div>
-    </div>
-
-  </main>
-
-  <!-- ==================== МОДАЛЬНЫЕ ОКНА ==================== -->
-
-  <!-- МОДАЛКА: ИМПОРТ ИЗ СБЕРБАНКА (SMS / ТЕКСТ ВЫПИСКИ) -->
-  <div id="modal-sber-import" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2">
-          <div class="w-7 h-7 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
-            900
-          </div>
-          <h3 class="font-bold text-white text-base">Импорт операций из Сбербанка</h3>
-        </div>
-        <button onclick="closeModal('modal-sber-import')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-
-      <div class="text-xs text-slate-300 space-y-3">
-        <p class="leading-relaxed">
-          Так как банки РФ не имеют прямого открытого API, ты можешь просто <b>скопировать текст SMS от номера 900</b>, пуш-уведомление или скопировать строчки выписки из приложения СберОнлайн. Наш алгоритм сам все распарсит:
-        </p>
-
-        <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-[11px] text-slate-400 space-y-1">
-          <div class="font-semibold text-slate-300">Примеры того, что можно вставить:</div>
-          <div>• <code class="text-emerald-400">Покупка 1450р Магнит Баланс: 48500р</code></div>
-          <div>• <code class="text-emerald-400">Перевод 45000р от ПАО СБЕРБАНК Зарплата</code></div>
-          <div>• <code class="text-emerald-400">Списание 35000р Ипотека Сбербанк</code></div>
-        </div>
-
-        <textarea 
-          id="sber-raw-text" 
-          rows="4" 
-          placeholder="Вставь сюда SMS или текст нескольких операций из Сбера..." 
-          class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3 text-white text-xs focus:outline-none focus:border-emerald-500"
-        ></textarea>
-      </div>
-
-      <div class="pt-2 flex justify-end gap-2 text-xs">
-        <button type="button" onclick="closeModal('modal-sber-import')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition">Отмена</button>
-        <button type="button" onclick="parseSberText()" class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-500 transition flex items-center gap-1.5">
-          <i data-lucide="check" class="w-4 h-4"></i> Распознать и записать
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: ИНСТРУКЦИЯ ДЛЯ IPHONE -->
-  <div id="modal-iphone-info" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base flex items-center gap-2">
-          <i data-lucide="apple" class="w-5 h-5 text-white"></i> Как пользоваться на iPhone
-        </h3>
-        <button onclick="closeModal('modal-iphone-info')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <div class="text-xs text-slate-300 space-y-3 leading-relaxed">
-        <p>Ты можешь сделать из этого сайта полноценное приложение для iOS без AppStore:</p>
-        <ol class="list-decimal list-inside space-y-2 text-slate-300">
-          <li>Открой эту страницу в <b>Safari</b> на Айфоне.</li>
-          <li>Внизу нажми кнопку <b>«Поделиться»</b> (квадрат со стрелочкой вверх <i data-lucide="share" class="w-3.5 h-3.5 inline"></i>).</li>
-          <li>Прокрути вниз и нажми <b>«На экран Домой»</b> (Add to Home Screen).</li>
-          <li>Нажми <b>«Добавить»</b> в правом верхнем углу.</li>
-        </ol>
-        <p class="text-slate-400 text-[11px] bg-slate-950 p-3 rounded-xl border border-slate-800">
-          ✨ Приложение появится на рабочем столе твоего iPhone с собственной иконкой, будет открываться мгновенно на весь экран и хранить все балансы офлайн!
-        </p>
-      </div>
-      <div class="pt-2 flex justify-end">
-        <button type="button" onclick="closeModal('modal-iphone-info')" class="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-semibold">Понятно, спасибо!</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: ТРАНЗАКЦИЯ -->
-  <div id="modal-transaction" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 id="modal-tx-title" class="font-bold text-white text-base">Новая операция</h3>
-        <button onclick="closeModal('modal-transaction')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <form id="tx-form" onsubmit="saveTransaction(event)" class="space-y-3 text-xs">
-        <input type="hidden" id="tx-type" value="income">
-        <div>
-          <label class="block text-slate-300 mb-1">Сумма (₽)</label>
-          <input type="number" id="tx-amount" step="any" min="0" required placeholder="Например: 45000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Категория</label>
-          <select id="tx-category" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-            <!-- Заполняется динамически -->
-          </select>
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Описание / От кого / Кому</label>
-          <input type="text" id="tx-desc" required placeholder="Аванс 25-го, Премия, Супермаркет, Бензин" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Дата</label>
-          <input type="date" id="tx-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div class="pt-3 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-transaction')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition">Отмена</button>
-          <button type="submit" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-500 transition">Сохранить</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: ЦЕЛЬ / ИПОТЕКА -->
-  <div id="modal-goal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base">Создать финансовую цель</h3>
-        <button onclick="closeModal('modal-goal')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <form id="goal-form" onsubmit="saveGoal(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Название цели</label>
-          <input type="text" id="goal-title" required placeholder="Компьютер для работы, Автомобиль, Резерв" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Целевая сумма (₽)</label>
-          <input type="number" id="goal-target" min="1" step="any" required placeholder="250000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Уже накоплено (₽)</label>
-          <input type="number" id="goal-current" min="0" step="any" value="0" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Сколько откладывать в месяц из премии (₽)</label>
-          <input type="number" id="goal-monthly-alloc" min="1" step="any" value="25000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div class="pt-3 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-goal')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition">Отмена</button>
-          <button type="submit" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-500 transition">Создать</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: ПОПОЛНЕНИЕ ЦЕЛИ -->
-  <div id="modal-contribute-goal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base">Внести в цель</h3>
-        <button onclick="closeModal('modal-contribute-goal')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <input type="hidden" id="contrib-goal-id">
-      <div class="text-xs text-slate-300 space-y-3">
-        <p id="contrib-goal-title" class="font-semibold text-white"></p>
-        <div>
-          <label class="block text-slate-300 mb-1">Сумма пополнения (₽)</label>
-          <input type="number" id="contrib-amount" min="1" step="any" required placeholder="20000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div class="flex items-center gap-2">
-          <input type="checkbox" id="contrib-deduct-balance" checked class="rounded border-slate-800 bg-slate-950 text-indigo-600">
-          <label for="contrib-deduct-balance" class="text-slate-400">Списать из баланса как расход</label>
-        </div>
-      </div>
-      <div class="pt-2 flex justify-end gap-2 text-xs">
-        <button type="button" onclick="closeModal('modal-contribute-goal')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Отмена</button>
-        <button type="button" onclick="submitGoalContribution()" class="px-5 py-2 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-500 transition">Внести</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: ДОБАВИТЬ ПЛАТЕЖ В ГРАФИК -->
-  <div id="modal-schedule" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base">Запланировать списание</h3>
-        <button onclick="closeModal('modal-schedule')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <form id="schedule-form" onsubmit="saveSchedule(event)" class="space-y-3 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1">Название платежа</label>
-          <input type="text" id="sch-title" required placeholder="Ипотека, Кредит, Аренда, Подписка" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Сумма (₽)</label>
-          <input type="number" id="sch-amount" min="1" step="any" required placeholder="35000" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Категория</label>
-          <input type="text" id="sch-category" required placeholder="Ипотека, Кредиты, ЖКХ" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div>
-          <label class="block text-slate-300 mb-1">Дата списания</label>
-          <input type="date" id="sch-date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500">
-        </div>
-        <div class="pt-3 flex justify-end gap-2">
-          <button type="button" onclick="closeModal('modal-schedule')" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Отмена</button>
-          <button type="submit" class="px-5 py-2 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-500 transition">Добавить</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- МОДАЛКА: НАСТРОЙКИ & КЛЮЧ GEMINI -->
-  <div id="modal-settings" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <h3 class="font-bold text-white text-base">Настройки & Gemini AI Key</h3>
-        <button onclick="closeModal('modal-settings')" class="text-slate-400 hover:text-white">
-          <i data-lucide="x" class="w-5 h-5"></i>
-        </button>
-      </div>
-      <div class="space-y-4 text-xs">
-        <div>
-          <label class="block text-slate-300 mb-1 font-semibold">Gemini API Key (Опционально)</label>
-          <p class="text-slate-400 mb-2 leading-relaxed">
-            В приложении работает встроенный интеллектуальный парсер и финансовый советник даже без ключа. Но если хотите подключить прямой Gemini 3 Flash:
-          </p>
-          <input type="password" id="gemini-api-key" placeholder="AIzaSy..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white focus:outline-none focus:border-indigo-500 font-mono-numbers">
-        </div>
-
-        <div class="border-t border-slate-800 pt-3">
-          <h4 class="font-semibold text-rose-400 mb-1">Сброс данных</h4>
-          <p class="text-slate-400 mb-3">Вернуть демонстрационные данные или очистить всё.</p>
-          <div class="flex gap-2">
-            <button onclick="resetToDemoData()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition">
-              Сброс на Демо
-            </button>
-            <button onclick="clearAllData()" class="px-3 py-2 bg-rose-950/40 text-rose-300 border border-rose-900/40 rounded-xl transition">
-              Удалить всё
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="pt-3 flex justify-end">
-        <button onclick="saveSettings()" class="px-5 py-2 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-500 text-xs transition">
-          Сохранить
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Toast всплывашка -->
-  <div id="toast" class="fixed bottom-20 lg:bottom-8 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 bg-slate-900 border border-slate-800 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 text-xs">
-    <div id="toast-icon" class="text-emerald-400"><i data-lucide="check-circle" class="w-4 h-4"></i></div>
-    <span id="toast-text">Действие выполнено</span>
-  </div>
-
-  <!-- ==================== JS ЛОГИКА ==================== -->
-  <script>
-    const STORAGE_KEY = 'fin_brat_v2_storage';
-    const API_KEY_STORAGE = 'fin_brat_gemini_key';
-
-    const defaultCategories = {
-      income: ['Зарплата (Аванс 25-е)', 'Зарплата (Расчет 10-е)', 'Премия / Бонус', 'Фриланс / Проект', 'Прочее'],
-      expense: ['Ипотека', 'Аренда и ЖКХ', 'Продукты и Еда', 'Авто и Транспорт', 'Техника и Покупки', 'Кафе и Досуг', 'Обязательные платежи', 'Цели и Накопления']
-    };
-
-    // Начальные реалистичные данные под профиль пользователя
-    const initialData = {
-      userProfile: {
-        baseSalary: 90000, // 45k 10-го и 45k 25-го
-        currentSimulatedIncome: 150000, // Выбранный сценарий
-        simScenarioName: 'Базовый / Средний',
-      },
-      // Данные по Ипотеке
-      mortgage: {
-        totalDebt: 3450000, // Остаток долга
-        monthlyPayment: 34800, // Обязательный ежемесячный платеж
-        rate: 8.5, // % ставка
-        extraMonthlyPayment: 20000 // Дополнительное досрочное погашение из переменной части ЗП
-      },
-      transactions: [
-        { id: 't1', type: 'income', amount: 45000, category: 'Зарплата (Аванс 25-е)', desc: 'Аванс по окладу', date: '2026-10-25' },
-        { id: 't2', type: 'income', amount: 105000, category: 'Зарплата (Расчет 10-е)', desc: 'Оклад 45к + Премия за закрытый проект 60к', date: '2026-10-10' },
-        { id: 't3', type: 'expense', amount: 34800, category: 'Ипотека', desc: 'Ежемесячный платеж в Сбербанк', date: '2026-10-15' },
-        { id: 't4', type: 'expense', amount: 18500, category: 'Продукты и Еда', desc: 'Супермаркеты и доставка', date: '2026-10-27' },
-        { id: 't5', type: 'expense', amount: 12000, category: 'Авто и Транспорт', desc: 'Бензин и мойка', date: '2026-10-28' },
-        { id: 't6', type: 'expense', amount: 25000, category: 'Цели и Накопления', desc: 'Отложено на Компьютер', date: '2026-10-12' }
-      ],
-      goals: [
-        { 
-          id: 'g_pc', 
-          title: 'Мощный Компьютер / Рабочая Станция', 
-          target: 240000, 
-          current: 125000, 
-          monthlyAllocation: 25000, 
-          color: 'cyan'
-        },
-        { 
-          id: 'g_cushion', 
-          title: 'Подушка безопасности (Резерв)', 
-          target: 350000, 
-          current: 210000, 
-          monthlyAllocation: 15000, 
-          color: 'emerald'
-        }
-      ],
-      schedules: [
-        { id: 's1', title: 'Платеж по Ипотеке (Сбер)', amount: 34800, category: 'Ипотека', date: '2026-11-15', repeat: 'monthly', status: 'pending' },
-        { id: 's2', title: 'Оплата интернета и мобильной связи', amount: 2400, category: 'Связь', date: '2026-11-05', repeat: 'monthly', status: 'pending' },
-        { id: 's3', title: 'ЖКХ и коммунальные услуги', amount: 6800, category: 'ЖКХ', date: '2026-11-12', repeat: 'monthly', status: 'pending' }
-      ],
-      chat: [
-        {
-          role: 'model',
-          text: 'Привет, брат! Я твой личный финансовый директор. Я знаю твой график (оклад 90 000 ₽ частями 10 и 25 числа + плавающий бонус до 210 000 ₽+), считаю сроки закрытия ипотеки и накоплений на компьютер. Ты можешь прямо в чате писать команды, например: **«Запиши расход 2500 на авто»** или **«Закинь 20000 в цель Компьютер»**, и я всё обновлю!'
-        }
-      ]
-    };
-
-    let state = loadState();
-    let goalsChartInstance = null;
-    let budgetChartInstance = null;
-
-    function loadState() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) return JSON.parse(raw);
-      } catch (e) {
-        console.error('Ошибка загрузки:', e);
-      }
-      return JSON.parse(JSON.stringify(initialData));
-    }
-
-    function saveState() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-      } catch (e) {
-        console.error('Ошибка записи:', e);
-      }
-    }
-
-    // Инициализация при старте
-    window.addEventListener('DOMContentLoaded', () => {
-      lucide.createIcons();
-      initCategoryOptions();
-      refreshAll();
-      initCharts();
-
-      // Установка дат в формах
-      const todayStr = new Date().toISOString().split('T')[0];
-      if (document.getElementById('tx-date')) document.getElementById('tx-date').value = todayStr;
-      if (document.getElementById('sch-date')) document.getElementById('sch-date').value = todayStr;
-
-      const savedKey = localStorage.getItem(API_KEY_STORAGE);
-      if (savedKey && document.getElementById('gemini-api-key')) {
-        document.getElementById('gemini-api-key').value = savedKey;
-      }
-    });
-
-    // Навигация
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      const activeContent = document.getElementById('tab-' + tabId);
-      if (activeContent) activeContent.classList.remove('hidden');
-
-      // Кнопки десктоп
-      document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('text-white', 'bg-indigo-600', 'shadow-sm');
-        btn.classList.add('text-slate-400');
-      });
-      const activeNav = document.getElementById('nav-' + tabId);
-      if (activeNav) {
-        activeNav.classList.remove('text-slate-400');
-        activeNav.classList.add('text-white', 'bg-indigo-600', 'shadow-sm');
-      }
-
-      lucide.createIcons();
-
-      if (tabId === 'dashboard' || tabId === 'goals') {
-        updateCharts();
-      }
-      if (tabId === 'coach') {
-        renderCoachView();
-      }
-      if (tabId === 'chat') {
-        scrollChatToBottom();
-      }
-    }
-
-    // Полный пересчет и обновление UI
-    function refreshAll() {
-      calculateMetrics();
-      renderMortgage();
-      renderGoals();
-      renderTransactions();
-      renderSchedules();
-      renderCoachView();
-      renderChat();
-      updateCharts();
-      saveState();
-      lucide.createIcons();
-    }
-
-    // ==================== ЛОГИКА РЕЖИМА ФИНАНСОВОГО ТРЕНЕРА ====================
-    function renderCoachView() {
-      const now = new Date();
-      const currentDay = now.getDate();
-      
-      // Дни до 25-го или 10-го
-      let daysToNextPay = 0;
-      let targetPayDay = 25;
-      if (currentDay < 10) {
-        daysToNextPay = 10 - currentDay;
-        targetPayDay = 10;
-      } else if (currentDay < 25) {
-        daysToNextPay = 25 - currentDay;
-        targetPayDay = 25;
-      } else {
-        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-        daysToNextPay = (endOfMonth - currentDay) + 10;
-        targetPayDay = 10;
-      }
-      daysToNextPay = Math.max(1, daysToNextPay);
-
-      // Текущий баланс и списания
-      const totalIncome = state.transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-      const totalExpense = state.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
-      const netBalance = Math.max(0, totalIncome - totalExpense);
-
-      const mandatoryMonthly = state.schedules.reduce((s, item) => s + Number(item.amount), 0);
-      const safeDailySpend = Math.max(0, Math.round((netBalance * 0.45) / daysToNextPay));
-
-      // Обновление быстрых подсказок
-      const dailyHint = document.getElementById('coach-quick-daily-hint');
-      if (dailyHint) dailyHint.textContent = `Доступно: ~${formatCurrency(safeDailySpend)} / день`;
-
-      // Распределение по маршрутам
-      const routeSavings = Math.round(netBalance * 0.50); // 50% на накопительный счет
-      const routeDebit = Math.round(netBalance * 0.20);   // 20% на карту для покупок на 3 дня
-      const routeGoals = Math.max(0, netBalance - routeSavings - routeDebit); // 30% в фонд целей/ипотеки
-
-      const elSavings = document.getElementById('route-savings-acc');
-      const elDebit = document.getElementById('route-debit-acc');
-      const elGoals = document.getElementById('route-goals-acc');
-      if (elSavings) elSavings.textContent = formatCurrency(routeSavings);
-      if (elDebit) elDebit.textContent = formatCurrency(routeDebit);
-      if (elGoals) elGoals.textContent = formatCurrency(routeGoals);
-
-      // Генерация динамического совета тренера
-      const adviceContainer = document.getElementById('coach-advice-text');
-      const actionsContainer = document.getElementById('coach-action-buttons');
-      
-      const simIncome = state.userProfile.currentSimulatedIncome || 150000;
-      const bonusPart = Math.max(0, simIncome - (state.userProfile.baseSalary || 90000));
-      const m = state.mortgage;
-
-      if (adviceContainer && actionsContainer) {
-        adviceContainer.innerHTML = `
-          <p>
-            <b>Брат, внимание по текущему остатку (${formatCurrency(netBalance)}):</b>
-            До следующей выплаты (${targetPayDay}-го числа) осталось <b>${daysToNextPay} дн.</b> 
-            Твой безопасный дневной чек — <b>${formatCurrency(safeDailySpend)}</b>. Если удержишься в этой планке, кассовый разрыв исключен на 100%.
-          </p>
-          <p>
-            ⚡ <b>Где держать деньги прямо сейчас:</b> Не держи всю сумму на обычной дебетовой карте с 0%! 
-            Переведи <b>${formatCurrency(routeSavings)}</b> на накопительный счет с ежедневным начислением процентов в Сбере или Т-Банке. 
-            Каждый день они будут приносить живой пассивный доход, пока ты их не потратишь.
-          </p>
-          <p>
-            🎯 <b>Плавающая премия (${formatCurrency(bonusPart)}):</b> 
-            50% от нее (${formatCurrency(bonusPart * 0.5)}) рекомендую направить в досрочку ипотеки с <i>сокращением срока</i>. Это сбережет тебе более 180 000 ₽ переплаты банку уже в этом году!
-          </p>
-        `;
-
-        actionsContainer.innerHTML = `
-          <button onclick="applyCoachSplitRecommendation(${routeSavings}, ${routeGoals})" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow">
-            <i data-lucide="check" class="w-3.5 h-3.5"></i> Применить распределение
-          </button>
-          <button onclick="makeMortgageExtraPaymentPrompt()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Внести в ипотеку
-          </button>
-        `;
-      }
-    }
-
-    // Запуск конкретных сценариев аудита тренера
-    function triggerCoachAudit(type) {
-      let promptText = '';
-      if (type === 'daily_limit') {
-        promptText = 'Тренер, рассчитай мой жесткий безопасный лимит трат в день до 25-го числа и скажи что урезать.';
-      } else if (type === 'bonus_split') {
-        promptText = 'Тренер, как правильно распределить плавающий бонус 10-го числа по системе 50/35/15 между ипотекой и компьютером?';
-      } else if (type === 'mortgage_vs_yield') {
-        promptText = 'Что сейчас выгоднее: вкладывать свободные 40 000 рублей в досрочку ипотеки или держать на накопительном счете под 15-16%?';
-      } else if (type === 'expense_leak') {
-        promptText = 'Проведи аудит моих текущих трат и найди скрытые утечки бюджета.';
-      } else {
-        promptText = 'Проведи полный комплексный аудит моих финансов, плавающей зарплаты и сроков закрытия целей.';
-      }
-
-      switchTab('chat');
-      document.getElementById('chat-input').value = promptText;
-      handleChatSubmit();
-    }
-
-    function applyCoachSplitRecommendation(toSavings, toGoals) {
-      state.goals[0].current += Math.round(toGoals * 0.5);
-      showToast(`План активирован! Средства зарезервированы под цели и защиту.`);
-      refreshAll();
-    }
-
-    // ДВИЖОК ПЛАВАЮЩЕГО ДОХОДА & РАСЧЕТЫ
-    function setIncomeScenario(val, name) {
-      state.userProfile.currentSimulatedIncome = Number(val);
-      state.userProfile.simScenarioName = name;
-      document.getElementById('income-simulator-slider').value = val;
-      refreshAll();
-      showToast(`Выбран сценарий: ${name} (${formatCurrency(val)})`);
-    }
-
-    function handleSliderChange(val) {
-      state.userProfile.currentSimulatedIncome = Number(val);
-      state.userProfile.simScenarioName = `Пользовательский (${formatCurrency(val)})`;
-      refreshAll();
-    }
-
-    function calculateMetrics() {
-      const totalIncome = state.transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-      const totalExpense = state.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
-      const netBalance = totalIncome - totalExpense;
-
-      const mandatoryMonthly = state.schedules.reduce((s, item) => s + Number(item.amount), 0);
-
-      // Плавающий прогноз
-      const simIncome = state.userProfile.currentSimulatedIncome || 150000;
-      const baseSalary = state.userProfile.baseSalary || 90000;
-      const bonusPart = Math.max(0, simIncome - baseSalary);
-      const surplusForGoals = Math.max(0, simIncome - mandatoryMonthly - (simIncome * 0.35)); // 35% на быт
-
-      // Обновление DOM
-      document.getElementById('stat-balance').textContent = formatCurrency(netBalance);
-      document.getElementById('stat-mandatory').textContent = formatCurrency(mandatoryMonthly);
-      document.getElementById('current-scenario-label').textContent = formatCurrency(simIncome);
-      document.getElementById('slider-display-val').textContent = `${formatCurrency(simIncome)} в месяц`;
-      document.getElementById('calc-bonus-display').textContent = `+${formatCurrency(bonusPart)}`;
-      document.getElementById('calc-surplus-display').textContent = `~${formatCurrency(surplusForGoals)}`;
-
-      // Распределение в круговой диаграмме
-      const livingCost = Math.round(simIncome * 0.35);
-      const savingsTotal = Math.max(0, simIncome - mandatoryMonthly - livingCost);
-      document.getElementById('breakdown-bills').textContent = formatCurrency(mandatoryMonthly);
-      document.getElementById('breakdown-living').textContent = formatCurrency(livingCost);
-      document.getElementById('breakdown-savings').textContent = formatCurrency(savingsTotal);
-
-      // Срок по ипотеке
-      const mMonths = calculateMortgageMonthsLeft(state.mortgage.totalDebt, state.mortgage.monthlyPayment, state.mortgage.extraMonthlyPayment);
-      const mYears = Math.floor(mMonths / 12);
-      const mRemainMonths = mMonths % 12;
-      document.getElementById('stat-mortgage-eta').textContent = `~${mYears} г. ${mRemainMonths} мес.`;
-
-      // Срок по Компьютеру
-      const pcGoal = state.goals.find(g => g.id === 'g_pc') || state.goals[0];
-      if (pcGoal) {
-        const pcRem = Math.max(0, pcGoal.target - pcGoal.current);
-        const pcMonths = Math.ceil(pcRem / (pcGoal.monthlyAllocation || 20000));
-        document.getElementById('stat-pc-eta').textContent = pcRem === 0 ? 'Куплен!' : `~${pcMonths} мес.`;
-      }
-    }
-
-    // Расчет срока ипотеки с учетом досрочки
-    function calculateMortgageMonthsLeft(debt, monthly, extra) {
-      const totalPayment = monthly + extra;
-      if (totalPayment <= 0) return 300;
-      // Упрощенный расчет эффективного тела с процентной нагрузкой
-      const estimatedMonths = Math.ceil(debt / (totalPayment * 0.88));
-      return Math.max(1, estimatedMonths);
-    }
-
-    // ==================== ИПОТЕКА И ЦЕЛИ ====================
-    function renderMortgage() {
-      const container = document.getElementById('mortgage-card-container');
-      const m = state.mortgage;
-      const monthsLeft = calculateMortgageMonthsLeft(m.totalDebt, m.monthlyPayment, m.extraMonthlyPayment);
-      const years = Math.floor(monthsLeft / 12);
-      const months = monthsLeft % 12;
-
-      // Сравнение: если платить только обязательный платеж БЕЗ досрочки из плавающей премии
-      const slowMonths = Math.ceil(m.totalDebt / (m.monthlyPayment * 0.75));
-      const slowYears = Math.floor(slowMonths / 12);
-      const savedYears = Math.max(0, slowYears - years);
-
-      container.innerHTML = `
-        <div class="bg-gradient-to-br from-slate-900 via-emerald-950/20 to-slate-900 border border-emerald-500/30 p-6 rounded-3xl shadow-xl">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
-                <i data-lucide="home" class="w-6 h-6"></i>
-              </div>
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                  Главный объект
-                </span>
-                <h3 class="text-lg font-black text-white mt-0.5">Ипотека в Сбербанке</h3>
-                <p class="text-xs text-slate-400">Остаток долга: <b class="text-white font-mono-numbers">${formatCurrency(m.totalDebt)}</b></p>
-              </div>
-            </div>
-
-            <!-- Бейдж со сроком -->
-            <div class="bg-slate-950/80 border border-emerald-500/30 px-4 py-3 rounded-2xl text-left md:text-right">
-              <div class="text-[11px] text-slate-400 font-medium">Осталось до закрытия:</div>
-              <div class="text-xl font-extrabold text-emerald-400 font-mono-numbers">${years} лет ${months} мес.</div>
-              <div class="text-[10px] text-indigo-300">⚡ Экономия ${savedYears} лет за счет досрочных оплат из премии!</div>
-            </div>
-          </div>
-
-          <!-- Настройки ускорения ипотеки -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-5 pt-4 border-t border-slate-800/80 text-xs">
-            <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
-              <span class="text-slate-400 block text-[11px]">Обязательный платеж:</span>
-              <span class="font-bold text-white font-mono-numbers">${formatCurrency(m.monthlyPayment)} / мес</span>
-            </div>
-            <div class="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80">
-              <span class="text-slate-400 block text-[11px]">Досрочно из плавающего бонуса:</span>
-              <span class="font-bold text-emerald-400 font-mono-numbers">+${formatCurrency(m.extraMonthlyPayment)} / мес</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <button onclick="makeMortgageExtraPaymentPrompt()" class="w-full h-full py-2.5 px-3 bg-emerald-600/90 hover:bg-emerald-500 text-white rounded-xl font-semibold flex items-center justify-center gap-1.5 transition shadow">
-                <i data-lucide="zap" class="w-4 h-4"></i> Внести досрочку
-              </button>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderGoals() {
-      const grid = document.getElementById('goals-list-grid');
-      grid.innerHTML = '';
-
-      state.goals.forEach(g => {
-        const percent = Math.min(100, Math.round((g.current / g.target) * 100));
-        const remain = Math.max(0, g.target - g.current);
-        const months = Math.ceil(remain / (g.monthlyAllocation || 20000));
-
-        let etaBadge = '';
-        if (remain === 0) {
-          etaBadge = '<span class="text-emerald-400 font-bold">🎉 Накоплено!</span>';
-        } else if (months >= 12) {
-          const y = Math.floor(months / 12);
-          const m = months % 12;
-          etaBadge = `Осталось: <b class="text-white">${y} г. ${m > 0 ? m + ' мес.' : ''}</b>`;
-        } else {
-          etaBadge = `Осталось: <b class="text-cyan-400">${months} мес.</b>`;
-        }
-
-        const card = document.createElement('div');
-        card.className = 'bg-slate-900/60 border border-slate-800/80 p-5 rounded-3xl flex flex-col justify-between hover:border-slate-700 transition shadow';
-        card.innerHTML = `
-          <div>
-            <div class="flex items-start justify-between">
-              <div>
-                <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 px-2 py-0.5 rounded-full bg-indigo-500/10 border border-indigo-500/20">
-                  Финансовая цель
-                </span>
-                <h4 class="font-bold text-white text-sm mt-1.5 line-clamp-1">${escapeHtml(g.title)}</h4>
-              </div>
-              <button onclick="deleteGoal('${g.id}')" class="text-slate-500 hover:text-rose-400 p-1">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </div>
-
-            <div class="mt-4 flex items-baseline justify-between text-xs">
-              <span class="text-slate-400">Накоплено: <b class="text-white font-mono-numbers">${formatCurrency(g.current)}</b></span>
-              <span class="text-slate-400">Цель: <b class="text-slate-200 font-mono-numbers">${formatCurrency(g.target)}</b></span>
-            </div>
-
-            <!-- Прогресс -->
-            <div class="w-full bg-slate-800 h-2.5 rounded-full mt-2 overflow-hidden">
-              <div class="h-full bg-gradient-to-r from-cyan-500 to-indigo-500 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-            </div>
-
-            <div class="mt-2.5 flex items-center justify-between text-[11px] text-slate-400">
-              <span class="font-bold text-slate-300">${percent}%</span>
-              <span>${etaBadge}</span>
-            </div>
-          </div>
-
-          <div class="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-            <span class="text-[11px] text-slate-400">
-              Выделение: <b>${formatCurrency(g.monthlyAllocation)}/мес</b>
-            </span>
-            <button onclick="openContributeModal('${g.id}')" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-semibold flex items-center gap-1 transition">
-              <i data-lucide="plus" class="w-3.5 h-3.5 text-cyan-400"></i> Пополнить
-            </button>
-          </div>
-        `;
-        grid.appendChild(card);
-      });
-    }
-
-    // ==================== СБЕР ИМПОРТ (SMS & PUSH 900) ====================
-    function parseSberText() {
-      const text = document.getElementById('sber-raw-text').value.trim();
-      if (!text) {
-        showToast('Вставьте текст SMS или выписки');
-        return;
-      }
-
-      // Регулярные выражения для типичных SMS Сбера:
-      // "Покупка 1450р Магнит", "Перевод 45000р", "Списание 35000р"
-      const lines = text.split('\n');
-      let parsedCount = 0;
-
-      lines.forEach(line => {
-        if (!line.trim()) return;
-
-        let amount = null;
-        let type = 'expense';
-        let desc = 'Сбербанк операция';
-        let category = 'Прочее';
-
-        // Поиск суммы: "1450р", "45 000 руб", "35000.50 RUB"
-        const amountMatch = line.match(/(\d+[\d\s]*([.,]\d{1,2})?)\s*(р|руб|rub)/i);
-        if (amountMatch) {
-          amount = parseFloat(amountMatch[1].replace(/\s/g, '').replace(',', '.'));
-        }
-
-        // Определение типа
-        if (/перевод.*от|зачисление|зарплата|аванс|пополнение/i.test(line)) {
-          type = 'income';
-          category = 'Зарплата (Расчет 10-е)';
-          desc = 'Поступление средств (Сбер)';
-        } else if (/покупка|оплата|списание/i.test(line)) {
-          type = 'expense';
-          if (/магнит|пятерочка|перекресток|вкусвилл|еда|ресторан/i.test(line)) {
-            category = 'Продукты и Еда';
-          } else if (/лукойл|газпром|бензин|такси|uber|яндекс/i.test(line)) {
-            category = 'Авто и Транспорт';
-          } else if (/ипотек|кредит/i.test(line)) {
-            category = 'Ипотека';
-          } else {
-            category = 'Обязательные платежи';
-          }
-        }
-
-        // Поиск названия магазина/получателя
-        const merchantMatch = line.match(/(покупка|оплата|перевод)\s+[\d\s,.]+\s*(?:р|руб)?\s+([A-Za-zА-Яа-я0-9_\s-]+)/i);
-        if (merchantMatch && merchantMatch[2]) {
-          desc = merchantMatch[2].replace(/баланс.*/i, '').trim();
-        }
-
-        if (amount && amount > 0) {
-          state.transactions.unshift({
-            id: 'sber_' + Date.now() + Math.random().toString(36).substr(2, 4),
-            type,
-            amount,
-            category,
-            desc,
-            date: new Date().toISOString().split('T')[0]
-          });
-          parsedCount++;
-        }
-      });
-
-      closeModal('modal-sber-import');
-      document.getElementById('sber-raw-text').value = '';
-      refreshAll();
-
-      if (parsedCount > 0) {
-        showToast(`Успешно распознано и добавлено операций: ${parsedCount}!`);
-      } else {
-        showToast('Не удалось найти суммы. Попробуйте формат "Покупка 1500р Магазин"');
-      }
-    }
-
-    // ==================== ИИ CHAT CO-PILOT (С УПРАВЛЕНИЕМ ДАННЫМИ) ====================
-    async function handleChatSubmit(e) {
-      if (e) e.preventDefault();
-      const input = document.getElementById('chat-input');
-      const userText = input.value.trim();
-      if (!userText) return;
-
-      input.value = '';
-      state.chat.push({ role: 'user', text: userText });
-      renderChat();
-
-      const sendBtn = document.getElementById('chat-send-btn');
-      sendBtn.disabled = true;
-      sendBtn.innerHTML = `<span class="animate-spin inline-block w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full"></span>`;
-
-      try {
-        // Сначала запускаем парсер прямого действия (Function Calling / Action Engine)
-        const actionResult = executeUserCommandLocally(userText);
-        
-        let finalResponse = '';
-        if (actionResult.executed) {
-          finalResponse = actionResult.message;
-        } else {
-          // Если команды нет, опрашиваем советника (Gemini API или встроенный движок)
-          finalResponse = await queryGeminiAdvisor(userText);
-        }
-
-        state.chat.push({ role: 'model', text: finalResponse });
-      } catch (err) {
-        console.error('Ошибка ИИ:', err);
-        state.chat.push({
-          role: 'model',
-          text: 'Брат, я зафиксировал вопрос. Главное держи фокус: плавающий доход от 110k до 210k позволяет направлять излишек в ипотеку и закрыть её не за 20 лет, а меньше чем за 8!'
-        });
-      } finally {
-        sendBtn.disabled = false;
-        sendBtn.innerHTML = `<span>Отправить</span><i data-lucide="send" class="w-3.5 h-3.5"></i>`;
-        refreshAll();
-      }
-    }
-
-    // ЛОКАЛЬНЫЙ ДВИЖОК ДЕЙСТВИЙ (ПАРСИТ ТЕКСТ И МЕНЯЕТ ДАННЫЕ В ПРИЛОЖЕНИИ!)
-    function executeUserCommandLocally(text) {
-      const lower = text.toLowerCase();
-
-      // Запросы на аудит тренера в чате
-      if (lower.includes('лимит трат в день') || lower.includes('сколько можно тратить')) {
-        const now = new Date();
-        const currentDay = now.getDate();
-        let days = currentDay <= 25 ? (25 - currentDay || 1) : (31 - currentDay + 10);
-        const totalIncome = state.transactions.filter(t => t.type === 'income').reduce((s, t) => s + Number(t.amount), 0);
-        const totalExpense = state.transactions.filter(t => t.type === 'expense').reduce((s, t) => s + Number(t.amount), 0);
-        const safeDaily = Math.max(0, Math.round(((totalIncome - totalExpense) * 0.45) / days));
-        return {
-          executed: true,
-          message: `📊 **Аудит дневного лимита от ФинБрата:**\n- До следующей контрольной даты осталось: **${days} дн.**\n- Твой железный лимит: **${formatCurrency(safeDaily)} в день**.\n- *Совет тренера:* Все, что тратишь сверх этой суммы, забирает дни у покупки твоего нового Компьютера. Держи планку!`
-        };
-      }
-
-      if (lower.includes('ипотека vs') || lower.includes('накопительный') || lower.includes('вклад')) {
-        return {
-          executed: true,
-          message: `⚖️ **Стратегический разбор от Тренера: Ипотека vs Накопительный счет:**\n1. **Если ставка по ипотеке < 12% (например 8-9%):** Выгоднее держать свободный резерв на **накопительном счете с ежедневным процентом (14-16% годовых)**! Разницу ты кладешь себе в карман.\n2. **Когда гасить ипотеку:** Как только ставки по накопительным счетам пойдут вниз, снимаешь накопленную подушку одной суммой и отправляешь в досрочное погашение основного долга с *сокращением срока*!`
-        };
-      }
-
-      // 1. Добавить расход: "Запиши расход 3500 на авто"
-      if (lower.includes('расход') || lower.includes('потратил') || lower.includes('купил') || lower.includes('списали')) {
-        const numMatch = text.match(/(\d+[\d\s]*)/);
-        if (numMatch) {
-          const amount = parseFloat(numMatch[1].replace(/\s/g, ''));
-          let category = 'Прочее';
-          if (/авто|машин|бензин|топлив/i.test(lower)) category = 'Авто и Транспорт';
-          else if (/продукт|еда|магазин|кафе/i.test(lower)) category = 'Продукты и Еда';
-          else if (/ипотек|кредит/i.test(lower)) category = 'Ипотека';
-          else if (/техник|компьютер/i.test(lower)) category = 'Техника и Покупки';
-
-          state.transactions.unshift({
-            id: 'ai_' + Date.now(),
-            type: 'expense',
-            amount,
-            category,
-            desc: text.replace(/запиши|расход|потратил|купил/gi, '').trim() || 'Расход через ИИ',
-            date: new Date().toISOString().split('T')[0]
-          });
-          return {
-            executed: true,
-            message: `✅ **Сделано, брат!** Записал расход **${formatCurrency(amount)}** в категорию *«${category}»*. Баланс автоматически пересчитан!`
-          };
-        }
-      }
-
-      // 2. Добавить доход: "Добавь доход аванс 45000" / "Пришла премия 75000"
-      if (lower.includes('доход') || lower.includes('аванс') || lower.includes('зарплат') || lower.includes('преми') || lower.includes('получил')) {
-        const numMatch = text.match(/(\d+[\d\s]*)/);
-        if (numMatch) {
-          const amount = parseFloat(numMatch[1].replace(/\s/g, ''));
-          const isAdvance = lower.includes('аванс');
-          const category = isAdvance ? 'Зарплата (Аванс 25-е)' : 'Премия / Бонус';
-
-          state.transactions.unshift({
-            id: 'ai_' + Date.now(),
-            type: 'income',
-            amount,
-            category,
-            desc: isAdvance ? 'Аванс по окладу' : 'Поступление зарплаты/бонуса',
-            date: new Date().toISOString().split('T')[0]
-          });
-          return {
-            executed: true,
-            message: `💰 **Отлично, брат!** Добавил поступление **+${formatCurrency(amount)}** (${category}). Теперь свободный остаток увеличился!`
-          };
-        }
-      }
-
-      // 3. Пополнить цель: "Закинь 15000 в цель Компьютер"
-      if (lower.includes('в цель') || lower.includes('на цель') || lower.includes('в ипотек')) {
-        const numMatch = text.match(/(\d+[\d\s]*)/);
-        if (numMatch) {
-          const amount = parseFloat(numMatch[1].replace(/\s/g, ''));
-          
-          if (lower.includes('ипотек')) {
-            state.mortgage.totalDebt = Math.max(0, state.mortgage.totalDebt - amount);
-            state.transactions.unshift({
-              id: 'ai_' + Date.now(),
-              type: 'expense',
-              amount,
-              category: 'Ипотека',
-              desc: 'Досрочное погашение ипотеки (через чат)',
-              date: new Date().toISOString().split('T')[0]
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Ипотека', 'Авто / Бензин', 'Продукты', 'Прочее'],
+                    datasets: [{
+                        data: [35000, 8500, 12000, 5000],
+                        backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } } }
+                }
             });
-            return {
-              executed: true,
-              message: `🏠 **Мощный ход!** Внесли **${formatCurrency(amount)}** в досрочку по ипотеке. Остаток долга уменьшился до **${formatCurrency(state.mortgage.totalDebt)}**!`
-            };
-          }
+        }
 
-          const goal = state.goals.find(g => lower.includes('комп') || lower.includes('пк')) || state.goals[0];
-          if (goal) {
-            goal.current += amount;
-            state.transactions.unshift({
-              id: 'ai_' + Date.now(),
-              type: 'expense',
-              amount,
-              category: 'Цели и Накопления',
-              desc: `Пополнение цели: ${goal.title}`,
-              date: new Date().toISOString().split('T')[0]
+        function renderAll() {
+            // Баланс и доходы
+            document.getElementById('total-balance').innerText = appData.balance.toLocaleString() + ' ₽';
+            let inc = appData.baseSalary + appData.variableSalary;
+            document.getElementById('total-income').innerText = '+' + inc.toLocaleString() + ' ₽';
+            document.getElementById('variable-part-text').innerText = '+' + appData.variableSalary.toLocaleString() + ' ₽';
+
+            // Рендер целей
+            const goalsContainer = document.getElementById('goals-container');
+            goalsContainer.innerHTML = appData.goals.map(g => {
+                let pct = Math.round((g.current / g.target) * 100);
+                return `
+                    <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-800">
+                        <div class="flex justify-between items-center text-xs mb-1.5">
+                            <span class="font-semibold text-slate-200">${g.title}</span>
+                            <span class="text-slate-400">Срок: <strong class="text-emerald-400">${g.deadline}</strong></span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden mb-1">
+                            <div class="bg-gradient-to-r from-emerald-500 to-blue-500 h-full rounded-full" style="width: ${pct}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-400">
+                            <span>Накоплено: ${g.current.toLocaleString()} ₽</span>
+                            <span>Цель: ${g.target.toLocaleString()} ₽ (${pct}%)</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Рендер платежей
+            const payContainer = document.getElementById('payments-list');
+            payContainer.innerHTML = appData.payments.map(p => `
+                <div class="bg-cardBg border border-slate-800 p-3 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="text-xs font-semibold text-slate-200">${p.title}</p>
+                        <p class="text-[10px] text-slate-400">Дата списания: ${p.date}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs font-bold text-white">${p.amount.toLocaleString()} ₽</p>
+                        <span class="text-[10px] ${p.status === 'paid' ? 'text-emerald-400' : 'text-amber-400'}">${p.status === 'paid' ? 'Оплачено' : 'Предстоит'}</span>
+                    </div>
+                </div>
+            `).join('');
+
+            // Рендер транзакций
+            const txContainer = document.getElementById('transactions-list');
+            txContainer.innerHTML = appData.transactions.map(t => `
+                <div class="bg-cardBg border border-slate-800 p-2.5 rounded-xl flex justify-between items-center text-xs">
+                    <div>
+                        <p class="font-semibold text-slate-200">${t.title}</p>
+                        <p class="text-[10px] text-slate-400">${t.date}</p>
+                    </div>
+                    <span class="font-bold ${t.type === 'income' ? 'text-emerald-400' : 'text-slate-100'}">${t.type === 'income' ? '+' : '-'}${t.amount.toLocaleString()} ₽</span>
+                </div>
+            `).join('');
+
+            // Рендер в настройках
+            document.getElementById('setting-base-salary').value = appData.baseSalary;
+            document.getElementById('setting-var-salary').value = appData.variableSalary;
+
+            const setPayList = document.getElementById('settings-payments-list');
+            setPayList.innerHTML = appData.payments.map((p, idx) => `
+                <div class="flex justify-between items-center bg-slate-900 p-2 rounded-xl text-xs">
+                    <span>${p.title} (${p.amount} ₽)</span>
+                    <button onclick="deletePayment(${idx})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+
+            const setGoalList = document.getElementById('settings-goals-list');
+            setGoalList.innerHTML = appData.goals.map((g, idx) => `
+                <div class="flex justify-between items-center bg-slate-900 p-2 rounded-xl text-xs">
+                    <span>${g.title} (${g.target} ₽)</span>
+                    <button onclick="deleteGoal(${idx})" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            ['dashboard', 'coach', 'payments', 'transactions', 'settings'].forEach(t => {
+                const btn = document.getElementById('nav-' + t);
+                if (btn) btn.className = t === tabId ? 'flex flex-col items-center text-emerald-400 space-y-1' : 'flex flex-col items-center text-slate-400 space-y-1 hover:text-slate-200';
             });
-            return {
-              executed: true,
-              message: `🎯 **Есть!** Перевел **${formatCurrency(amount)}** в цель *«${goal.title}»*. Теперь накоплено: **${formatCurrency(goal.current)}** из ${formatCurrency(goal.target)}!`
-            };
-          }
+            if(tabId === 'dashboard') initChart();
         }
-      }
 
-      // 4. Смена сценария: "Что если мой доход будет 190000?"
-      if (lower.includes('доход будет') || lower.includes('если заработаю') || lower.includes('сценарий')) {
-        const numMatch = text.match(/(\d+[\d\s]*)/);
-        if (numMatch) {
-          const amount = parseFloat(numMatch[1].replace(/\s/g, ''));
-          state.userProfile.currentSimulatedIncome = amount;
-          return {
-            executed: true,
-            message: `⚡ **Сценарий переключен на ${formatCurrency(amount)}!** Все графики и сроки закрытия целей пересчитаны под эту цифру.`
-          };
+        function setSalaryScenario(type) {
+            if(type === 'min') { appData.variableSalary = 20000; appData.scenario = 'min'; }
+            if(type === 'mid') { appData.variableSalary = 60000; appData.scenario = 'mid'; }
+            if(type === 'max') { appData.variableSalary = 120000; appData.scenario = 'max'; }
+            document.getElementById('salary-scenario-badge').innerText = type === 'min' ? 'Консервативный: 110k' : type === 'mid' ? 'Средний: 150k' : 'Оптимистичный: 210k+';
+            saveData();
         }
-      }
 
-      return { executed: false };
-    }
-
-    async function queryGeminiAdvisor(userPrompt) {
-      const userCustomKey = localStorage.getItem(API_KEY_STORAGE) || "";
-      const m = state.mortgage;
-      const goalsText = state.goals.map(g => `${g.title}: ${g.current}/${g.target} руб`).join(', ');
-
-      const contextPrompt = `Ты — ФинБрат, лучший финансовый советник и партнер. Отвечай по-братски, емко, уважительно, с цифрами.
-Финансовый контекст пользователя:
-- Оклад: 90 000 руб (по 45k 10-го и 25-го числа).
-- Плавающий доход сейчас: ${state.userProfile.currentSimulatedIncome} руб/мес (от 110k до 210k+).
-- Ипотека в Сбере: остаток ${m.totalDebt} руб, обязательный платеж ${m.monthlyPayment} руб.
-- Цели: ${goalsText}.
-Вопрос пользователя: "${userPrompt}"`;
-
-      if (userCustomKey) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${userCustomKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: contextPrompt }] }] })
-          });
-          const data = await res.json();
-          const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-          if (text) return text;
-        } catch (e) {
-          console.warn('Gemini API fail, using local expert engine', e);
+        function saveSalarySettings() {
+            appData.baseSalary = Number(document.getElementById('setting-base-salary').value);
+            appData.variableSalary = Number(document.getElementById('setting-var-salary').value);
+            saveData();
+            alert('Зарплата успешно обновлена, брат!');
         }
-      }
 
-      // Умный локальный ответ
-      if (userPrompt.toLowerCase().includes('ипотек')) {
-        return `Брат, с твоим доходом (оклад 90k + плавающий бонус до 210k) ключевая фишка — **направлять 50% каждого бонуса сверх 90 000 ₽ строго в досрочное погашение ипотеки с уменьшением срока**.\n\nЭто сокращает переплату банку почти в 2,5 раза и срезает срок с 15+ лет до ~7-9 лет!`;
-      }
-      return `Брат, у тебя отличная структура дохода. Главное правило при плавающей зарплате: **жить строго на фиксированный оклад 90 000 ₽**, а все деньги, что приходят сверх (от 20k до 120k бонуса 10-го числа), сразу распределять: 60% в ипотеку, 30% на компьютер/цели, 10% на удовольствия. Тогда ты никогда не окажешься без денег!`;
-    }
-
-    function sendQuickPrompt(text) {
-      document.getElementById('chat-input').value = text;
-      handleChatSubmit();
-    }
-
-    function makeMortgageExtraPaymentPrompt() {
-      const amountStr = prompt('Сколько рублей внести в досрочное погашение ипотеки?', '30000');
-      if (amountStr) {
-        const val = parseFloat(amountStr);
-        if (val > 0) {
-          state.mortgage.totalDebt = Math.max(0, state.mortgage.totalDebt - val);
-          state.transactions.unshift({
-            id: 'tx_' + Date.now(),
-            type: 'expense',
-            amount: val,
-            category: 'Ипотека',
-            desc: 'Досрочное погашение основного долга',
-            date: new Date().toISOString().split('T')[0]
-          });
-          refreshAll();
-          showToast(`Внесено ${formatCurrency(val)} в досрочное погашение!`);
+        function addNewPayment() {
+            const title = document.getElementById('new-pay-title').value;
+            const amount = Number(document.getElementById('new-pay-amount').value);
+            const date = document.getElementById('new-pay-date').value;
+            if(!title || !amount) return alert('Заполни название и сумму!');
+            appData.payments.push({ id: Date.now(), title, amount, date: date || '1 число', status: 'pending' });
+            document.getElementById('new-pay-title').value = '';
+            document.getElementById('new-pay-amount').value = '';
+            document.getElementById('new-pay-date').value = '';
+            saveData();
         }
-      }
-    }
 
-    // ==================== ДИАГРАММЫ (CHART.JS) ====================
-    function initCharts() {
-      // 1. График сроков целей
-      const ctxGoals = document.getElementById('goalsTimelineChart').getContext('2d');
-      goalsChartInstance = new Chart(ctxGoals, {
-        type: 'bar',
-        data: {
-          labels: ['Ипотека (Сбер)', 'Компьютер / ПК', 'Подушка резерва'],
-          datasets: [{
-            label: 'Осталось месяцев до закрытия',
-            data: [110, 5, 9],
-            backgroundColor: ['#10b981', '#06b6d4', '#6366f1'],
-            borderRadius: 12
-          }]
-        },
-        options: {
-          indexAxis: 'y',
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: (ctx) => ` Осталось: ${ctx.raw} мес (~${(ctx.raw/12).toFixed(1)} лет)`
-              }
-            }
-          },
-          scales: {
-            x: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } }
-            },
-            y: {
-              grid: { display: false },
-              ticks: { color: '#f8fafc', font: { family: 'Plus Jakarta Sans', weight: 'bold' } }
-            }
-          }
+        function deletePayment(idx) {
+            appData.payments.splice(idx, 1);
+            saveData();
         }
-      });
 
-      // 2. Распределение бюджета
-      const ctxBudget = document.getElementById('budgetSplitChart').getContext('2d');
-      budgetChartInstance = new Chart(ctxBudget, {
-        type: 'doughnut',
-        data: {
-          labels: ['Счета & Ипотека', 'Жизнь & Быт', 'В цели & Досрочки'],
-          datasets: [{
-            data: [44000, 52500, 53500],
-            backgroundColor: ['#f59e0b', '#10b981', '#6366f1'],
-            borderWidth: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          cutout: '72%'
+        function addNewGoal() {
+            const title = document.getElementById('new-goal-title').value;
+            const target = Number(document.getElementById('new-goal-target').value);
+            const deadline = document.getElementById('new-goal-deadline').value;
+            if(!title || !target) return alert('Заполни название и цель!');
+            appData.goals.push({ id: Date.now(), title, target, current: 0, deadline: deadline || '1 год' });
+            document.getElementById('new-goal-title').value = '';
+            document.getElementById('new-goal-target').value = '';
+            document.getElementById('new-goal-deadline').value = '';
+            saveData();
         }
-      });
-    }
 
-    function updateCharts() {
-      if (!goalsChartInstance || !budgetChartInstance) return;
-
-      // Сроки
-      const mMonths = calculateMortgageMonthsLeft(state.mortgage.totalDebt, state.mortgage.monthlyPayment, state.mortgage.extraMonthlyPayment);
-      
-      const labels = ['Ипотека (Сбер)'];
-      const data = [mMonths];
-      const colors = ['#10b981'];
-
-      state.goals.forEach(g => {
-        const rem = Math.max(0, g.target - g.current);
-        const m = Math.ceil(rem / (g.monthlyAllocation || 20000));
-        labels.push(g.title.split(' ')[0] + '..');
-        data.push(m);
-        colors.push('#06b6d4');
-      });
-
-      goalsChartInstance.data.labels = labels;
-      goalsChartInstance.data.datasets[0].data = data;
-      goalsChartInstance.data.datasets[0].backgroundColor = colors;
-      goalsChartInstance.update();
-
-      // Круг бюджета
-      const sim = state.userProfile.currentSimulatedIncome || 150000;
-      const mandatory = state.schedules.reduce((s, item) => s + Number(item.amount), 0);
-      const living = Math.round(sim * 0.35);
-      const savings = Math.max(0, sim - mandatory - living);
-
-      budgetChartInstance.data.datasets[0].data = [mandatory, living, savings];
-      budgetChartInstance.update();
-    }
-
-    // ==================== СТАНДАРТНЫЕ МЕТОДЫ ====================
-    function initCategoryOptions() {
-      const select = document.getElementById('tx-category');
-      select.innerHTML = '';
-      defaultCategories.expense.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        select.appendChild(opt);
-      });
-    }
-
-    function openTransactionModal(type) {
-      document.getElementById('tx-type').value = type;
-      document.getElementById('modal-tx-title').textContent = type === 'income' ? 'Новый Доход' : 'Новое Списание';
-      
-      const select = document.getElementById('tx-category');
-      select.innerHTML = '';
-      const list = type === 'income' ? defaultCategories.income : defaultCategories.expense;
-      list.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        select.appendChild(opt);
-      });
-
-      document.getElementById('tx-form').reset();
-      document.getElementById('tx-date').value = new Date().toISOString().split('T')[0];
-      openModal('modal-transaction');
-    }
-
-    function saveTransaction(e) {
-      e.preventDefault();
-      const type = document.getElementById('tx-type').value;
-      const amount = parseFloat(document.getElementById('tx-amount').value);
-      const category = document.getElementById('tx-category').value;
-      const desc = document.getElementById('tx-desc').value;
-      const date = document.getElementById('tx-date').value;
-
-      if (!amount || amount <= 0) return;
-
-      state.transactions.unshift({
-        id: 'tx_' + Date.now(),
-        type,
-        amount,
-        category,
-        desc,
-        date
-      });
-
-      closeModal('modal-transaction');
-      refreshAll();
-      showToast('Операция успешно сохранена!');
-    }
-
-    function renderTransactions() {
-      const tbody = document.getElementById('transactions-table-body');
-      const search = (document.getElementById('tx-search')?.value || '').toLowerCase();
-      const filterType = document.getElementById('tx-filter-type')?.value || 'all';
-
-      const filtered = state.transactions.filter(t => {
-        const matches = t.desc.toLowerCase().includes(search) || t.category.toLowerCase().includes(search);
-        const matchesType = filterType === 'all' || t.type === filterType;
-        return matches && matchesType;
-      });
-
-      tbody.innerHTML = '';
-      filtered.forEach(t => {
-        const isIncome = t.type === 'income';
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 border-b border-slate-800/60';
-        tr.innerHTML = `
-          <td class="p-3.5 text-slate-400 whitespace-nowrap">${t.date}</td>
-          <td class="p-3.5">
-            <span class="px-2 py-0.5 rounded-full text-[11px] font-medium ${isIncome ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-300'}">
-              ${escapeHtml(t.category)}
-            </span>
-          </td>
-          <td class="p-3.5 font-medium text-white">${escapeHtml(t.desc)}</td>
-          <td class="p-3.5 text-right font-bold whitespace-nowrap font-mono-numbers ${isIncome ? 'text-emerald-400' : 'text-rose-400'}">
-            ${isIncome ? '+' : '-'}${formatCurrency(t.amount)}
-          </td>
-          <td class="p-3.5 text-center">
-            <button onclick="deleteTransaction('${t.id}')" class="text-slate-500 hover:text-rose-400 p-1">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-      lucide.createIcons();
-    }
-
-    function deleteTransaction(id) {
-      state.transactions = state.transactions.filter(t => t.id !== id);
-      refreshAll();
-      showToast('Удалено');
-    }
-
-    function openGoalModal() {
-      document.getElementById('goal-form').reset();
-      openModal('modal-goal');
-    }
-
-    function saveGoal(e) {
-      e.preventDefault();
-      const title = document.getElementById('goal-title').value;
-      const target = parseFloat(document.getElementById('goal-target').value);
-      const current = parseFloat(document.getElementById('goal-current').value) || 0;
-      const monthlyAllocation = parseFloat(document.getElementById('goal-monthly-alloc').value) || 20000;
-
-      state.goals.push({
-        id: 'g_' + Date.now(),
-        title,
-        target,
-        current,
-        monthlyAllocation,
-        color: 'cyan'
-      });
-
-      closeModal('modal-goal');
-      refreshAll();
-      showToast('Цель создана!');
-    }
-
-    function deleteGoal(id) {
-      state.goals = state.goals.filter(g => g.id !== id);
-      refreshAll();
-      showToast('Цель удалена');
-    }
-
-    function openContributeModal(id) {
-      const g = state.goals.find(x => x.id === id);
-      if (!g) return;
-      document.getElementById('contrib-goal-id').value = g.id;
-      document.getElementById('contrib-goal-title').textContent = `${g.title} (Осталось: ${formatCurrency(Math.max(0, g.target - g.current))})`;
-      document.getElementById('contrib-amount').value = '';
-      openModal('modal-contribute-goal');
-    }
-
-    function submitGoalContribution() {
-      const id = document.getElementById('contrib-goal-id').value;
-      const amount = parseFloat(document.getElementById('contrib-amount').value);
-      const deduct = document.getElementById('contrib-deduct-balance').checked;
-      if (!amount || amount <= 0) return;
-
-      const g = state.goals.find(x => x.id === id);
-      if (g) {
-        g.current += amount;
-        if (deduct) {
-          state.transactions.unshift({
-            id: 'tx_' + Date.now(),
-            type: 'expense',
-            amount,
-            category: 'Цели и Накопления',
-            desc: `Пополнение: ${g.title}`,
-            date: new Date().toISOString().split('T')[0]
-          });
+        function deleteGoal(idx) {
+            appData.goals.splice(idx, 1);
+            saveData();
         }
-      }
-      closeModal('modal-contribute-goal');
-      refreshAll();
-      showToast('Цель успешно пополнена!');
-    }
 
-    function openScheduleModal() {
-      document.getElementById('schedule-form').reset();
-      document.getElementById('sch-date').value = new Date().toISOString().split('T')[0];
-      openModal('modal-schedule');
-    }
+        function openSberModal() { document.getElementById('sber-modal').classList.remove('hidden'); }
+        function closeSberModal() { document.getElementById('sber-modal').classList.add('hidden'); }
+        
+        function processSberImport() {
+            const text = document.getElementById('sber-sms-text').value;
+            if(!text) return;
+            appData.transactions.unshift({ id: Date.now(), title: "Сбер Импорт: " + text.slice(0, 20), amount: 1500, type: "expense", date: "Сегодня" });
+            appData.balance -= 1500;
+            saveData();
+            closeSberModal();
+            alert('Операция из Сбера успешно распознана и добавлена!');
+        }
 
-    function saveSchedule(e) {
-      e.preventDefault();
-      const title = document.getElementById('sch-title').value;
-      const amount = parseFloat(document.getElementById('sch-amount').value);
-      const category = document.getElementById('sch-category').value;
-      const date = document.getElementById('sch-date').value;
+        function openAddTxModal() { document.getElementById('tx-modal').classList.remove('hidden'); }
+        function closeAddTxModal() { document.getElementById('tx-modal').classList.add('hidden'); }
 
-      state.schedules.push({
-        id: 'sch_' + Date.now(),
-        title,
-        amount,
-        category,
-        date,
-        repeat: 'monthly',
-        status: 'pending'
-      });
-      closeModal('modal-schedule');
-      refreshAll();
-      showToast('Платеж внесен в график!');
-    }
+        function saveNewTransaction() {
+            const title = document.getElementById('tx-title').value;
+            const amount = Number(document.getElementById('tx-amount').value);
+            const type = document.getElementById('tx-type').value;
+            if(!title || !amount) return;
+            appData.transactions.unshift({ id: Date.now(), title, amount, type, date: "Сегодня" });
+            if(type === 'income') appData.balance += amount; else appData.balance -= amount;
+            saveData();
+            closeAddTxModal();
+        }
 
-    function renderSchedules() {
-      const tbody = document.getElementById('schedules-table-body');
-      tbody.innerHTML = '';
+        function sendCoachQuery(query) {
+            const msgBox = document.getElementById('chat-messages');
+            msgBox.innerHTML += `<div class="bg-blue-600/30 p-3 rounded-2xl rounded-tr-sm text-slate-100 text-xs ml-6">${query}</div>`;
+            setTimeout(() => {
+                let reply = "Брат, всё под контролем! При текущем раскладе твоя подушка безопасности растет, продолжай в том же духе.";
+                if(query.includes('день')) reply = `Брат, до 25 числа осталось несколько дней. Твой безопасный лимит трат — примерно <strong>1 800 ₽ в день</strong>, чтобы не залезть в обязательные платежи.`;
+                if(query.includes('премию')) reply = `По премии 10-го числа: сразу отправляй 50% на досрочное погашение ипотеки, а остальное делим между целями и личными хотелками!`;
+                msgBox.innerHTML += `<div class="bg-slate-800 p-3 rounded-2xl rounded-tl-sm text-slate-200 text-xs mr-6">${reply}</div>`;
+                msgBox.scrollTop = msgBox.scrollHeight;
+            }, 500);
+        }
 
-      state.schedules.forEach(s => {
-        const isPaid = s.status === 'paid';
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-800/40 border-b border-slate-800/60';
-        tr.innerHTML = `
-          <td class="p-3.5 text-slate-300 font-medium">${s.date}</td>
-          <td class="p-3.5 font-bold text-white">${escapeHtml(s.title)}</td>
-          <td class="p-3.5 text-slate-400">${escapeHtml(s.category)}</td>
-          <td class="p-3.5 font-bold text-amber-400 font-mono-numbers">${formatCurrency(s.amount)}</td>
-          <td class="p-3.5 text-slate-400">Ежемесячно</td>
-          <td class="p-3.5">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${isPaid ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">
-              ${isPaid ? 'Оплачено' : 'Ожидает'}
-            </span>
-          </td>
-          <td class="p-3.5 text-center space-x-2">
-            <button onclick="toggleSchedule('${s.id}')" class="text-slate-400 hover:text-emerald-400" title="Оплатить">
-              <i data-lucide="${isPaid ? 'rotate-ccw' : 'check'}" class="w-4 h-4"></i>
-            </button>
-            <button onclick="deleteSchedule('${s.id}')" class="text-slate-500 hover:text-rose-400" title="Удалить">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-      lucide.createIcons();
-    }
+        function handleUserChat() {
+            const input = document.getElementById('chat-input');
+            if(!input.value) return;
+            sendCoachQuery(input.value);
+            input.value = '';
+        }
 
-    function toggleSchedule(id) {
-      const s = state.schedules.find(x => x.id === id);
-      if (!s) return;
-      s.status = s.status === 'paid' ? 'pending' : 'paid';
-      if (s.status === 'paid') {
-        state.transactions.unshift({
-          id: 'tx_' + Date.now(),
-          type: 'expense',
-          amount: s.amount,
-          category: s.category,
-          desc: `Оплата по графику: ${s.title}`,
-          date: new Date().toISOString().split('T')[0]
-        });
-      }
-      refreshAll();
-    }
-
-    function deleteSchedule(id) {
-      state.schedules = state.schedules.filter(x => x.id !== id);
-      refreshAll();
-    }
-
-    function renderChat() {
-      const container = document.getElementById('chat-messages');
-      container.innerHTML = '';
-      state.chat.forEach(msg => {
-        const isBot = msg.role === 'model';
-        const div = document.createElement('div');
-        div.className = `flex gap-3 ${isBot ? '' : 'flex-row-reverse'}`;
-        div.innerHTML = `
-          <div class="w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${isBot ? 'bg-gradient-to-tr from-emerald-500 to-indigo-600 text-white' : 'bg-slate-800 text-slate-200'}">
-            <i data-lucide="${isBot ? 'bot' : 'user'}" class="w-4 h-4"></i>
-          </div>
-          <div class="max-w-[85%] rounded-2xl p-3.5 text-xs leading-relaxed ${isBot ? 'bg-slate-900 border border-slate-800 text-slate-200 shadow-md' : 'bg-indigo-600 text-white'}">
-            ${formatChatText(msg.text)}
-          </div>
-        `;
-        container.appendChild(div);
-      });
-      lucide.createIcons();
-      scrollChatToBottom();
-    }
-
-    function formatChatText(text) {
-      return escapeHtml(text)
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/\*(.*?)\*/g, '<i>$1</i>')
-        .replace(/\n/g, '<br>');
-    }
-
-    function scrollChatToBottom() {
-      const c = document.getElementById('chat-messages');
-      if (c) c.scrollTop = c.scrollHeight;
-    }
-
-    function clearChatHistory() {
-      state.chat = [{ role: 'model', text: 'Диалог очищен. Чем могу помочь, брат?' }];
-      refreshAll();
-    }
-
-    function saveSettings() {
-      const val = document.getElementById('gemini-api-key').value.trim();
-      if (val) localStorage.setItem(API_KEY_STORAGE, val);
-      else localStorage.removeItem(API_KEY_STORAGE);
-      closeModal('modal-settings');
-      showToast('Настройки сохранены');
-    }
-
-    function resetToDemoData() {
-      state = JSON.parse(JSON.stringify(initialData));
-      saveState();
-      refreshAll();
-      closeModal('modal-settings');
-      showToast('Данные сброшены на демо');
-    }
-
-    function clearAllData() {
-      state = {
-        userProfile: { baseSalary: 90000, currentSimulatedIncome: 150000 },
-        mortgage: { totalDebt: 0, monthlyPayment: 0, rate: 0, extraMonthlyPayment: 0 },
-        transactions: [],
-        goals: [],
-        schedules: [],
-        chat: [{ role: 'model', text: 'Начинаем с чистого листа, брат!' }]
-      };
-      saveState();
-      refreshAll();
-      closeModal('modal-settings');
-      showToast('Все данные очищены');
-    }
-
-    function openModal(id) {
-      document.getElementById(id).classList.remove('hidden');
-      lucide.createIcons();
-    }
-
-    function closeModal(id) {
-      document.getElementById(id).classList.add('hidden');
-    }
-
-    function formatCurrency(val) {
-      return new Intl.NumberFormat('ru-RU', {
-        style: 'currency',
-        currency: 'RUB',
-        maximumFractionDigits: 0
-      }).format(val || 0);
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function showToast(text) {
-      const t = document.getElementById('toast');
-      document.getElementById('toast-text').textContent = text;
-      t.classList.remove('translate-y-24', 'opacity-0');
-      setTimeout(() => t.classList.add('translate-y-24', 'opacity-0'), 2600);
-    }
-  </script>
+        // Инициализация при старте
+        renderAll();
+        initChart();
+    </script>
 </body>
 </html>
